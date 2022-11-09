@@ -1,29 +1,57 @@
 package mcts
 
 import (
-	"fmt"
 	"github.com/dylhunn/dragontoothmg"
-	"math"
 )
 
 type MonteCarloTreeSearcher struct {
 	BaseState dragontoothmg.Board
-	Head *monteCarloNode
-	//TODO: add eval func and tree policy func
+	Head *MonteCarloNode
+	treeFunc func(*MonteCarloNode ,*MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64
+	evalFunc func(dragontoothmg.Board) float64
 }
 
-func NewSearch(board dragontoothmg.Board) MonteCarloTreeSearcher {
+func NewSearch(board dragontoothmg.Board, tree func(*MonteCarloNode ,*MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64, eval func(dragontoothmg.Board) float64) MonteCarloTreeSearcher {
 	return MonteCarloTreeSearcher {
 		BaseState : board,
-		Head: newNode(nil, board, []dragontoothmg.Move{}),
+		Head: newNode(nil, board),
+		treeFunc:tree,
+		evalFunc:eval,
 	}
 }
-
 
 func (mcts MonteCarloTreeSearcher) RunIterations(n int){
 	for i := 0; i < n; i++ {
 		mcts.iteration()
 	}
+}
+
+func (mcts *MonteCarloTreeSearcher) ApplyMove(move dragontoothmg.Move){
+	mcts.BaseState.Apply(move)
+	for i, option := range mcts.Head.Moves {
+		if option == move {
+			selectedChild := mcts.Head.Children[i]
+			if selectedChild == nil {
+				break
+			}
+
+			mcts.Head = selectedChild
+			mcts.Head.Parent = nil
+			return
+		}
+	}
+
+	mcts.Head = newNode(nil, mcts.BaseState)
+}
+
+func (mcts *MonteCarloTreeSearcher) ApplyMoveString(movestr string) error {
+	move, err := dragontoothmg.ParseMove(movestr)
+	if err != nil {
+		return err 
+	}
+	
+	mcts.ApplyMove(move)
+	return nil
 }
 
 func (mcts MonteCarloTreeSearcher) GetBestMove() dragontoothmg.Move {
@@ -39,7 +67,6 @@ func (mcts MonteCarloTreeSearcher) GetBestMove() dragontoothmg.Move {
 }
 
 func (mcts MonteCarloTreeSearcher) iteration(){
-	TEMPSTACK := []dragontoothmg.Move{}
 	evaluation := 0.0
 
 	// 1. Selection
@@ -57,20 +84,18 @@ func (mcts MonteCarloTreeSearcher) iteration(){
 			}
 			break selectionLoop	
 		}
-		//TODO: deal with checking if the game is won
 		// If any null node exists expand it otherwise choose the one with best uct score
 		
 		for i := range(node.Children) {
 			if node.Children[i] == nil {
 				// 2. Expansion and Evaluation
 				board.Apply(node.Moves[i])
-				TEMPSTACK = append(TEMPSTACK, node.Moves[i])
 				
-				nextNode := newNode(node, board, TEMPSTACK) 
+				nextNode := newNode(node, board) 
 				node.Children[i] = nextNode
 				
 				node = nextNode
-				evaluation = Evaluate(board)
+				evaluation = mcts.evalFunc(board)
 				break selectionLoop
 			}
 		}
@@ -78,15 +103,13 @@ func (mcts MonteCarloTreeSearcher) iteration(){
 		bestChildIndex := 0
 		bestScore := -1.0
 		for i, v := range(node.Children) {
-			score := UCT(node, v)
+			score := mcts.treeFunc(node, v, board, node.Moves[i])
 			if score > bestScore {
 				bestScore = score
 				bestChildIndex = i
 			}
 		}
 
-		
-		TEMPSTACK = append(TEMPSTACK, node.Moves[bestChildIndex])
 		board.Apply(node.Moves[bestChildIndex])
 		node = node.Children[bestChildIndex]
 	} 
@@ -103,25 +126,12 @@ func (mcts MonteCarloTreeSearcher) iteration(){
 	}
 }
 
-func newNode(parent *monteCarloNode, board dragontoothmg.Board, TEMPSTACK []dragontoothmg.Move) *monteCarloNode{
-	defer func() {
-		if err := recover(); err != nil {
-
-			fmt.Println(board.ToFen())
-			fmt.Println(TEMPSTACK)
-			for _, v := range TEMPSTACK {
-				fmt.Println(v.String())
-			}
-
-			panic("new panic 😎")
-			//fmt.Println("panic occurred:", err)
-		}
-	}()
+func newNode(parent *MonteCarloNode, board dragontoothmg.Board) *MonteCarloNode{
 	moves := board.GenerateLegalMoves()
 
-	children := make([]*monteCarloNode, len(moves), len(moves))
+	children := make([]*MonteCarloNode, len(moves), len(moves))
 
-	return &monteCarloNode{
+	return &MonteCarloNode{
 		Parent: parent,
 		Children: children,
 		Moves: moves,
@@ -130,64 +140,9 @@ func newNode(parent *monteCarloNode, board dragontoothmg.Board, TEMPSTACK []drag
 	}
 }
 
-func UCT(parent, child *monteCarloNode) float64 {
-	c := 0.4
-	return (child.Value/child.Visits) + math.Sqrt(c*math.Log(parent.Visits)/child.Visits) 
-}
-
-func Evaluate(board dragontoothmg.Board) float64 {
-	eval := 0.0
-
-	for i := 0; i <64 ;i++ {
-		if board.White.All >> i % 2 == 1 {
-			if board.White.Pawns >> i % 2 == 1 {
-				eval += 1.0
-			}
-			if board.White.Knights >> i % 2 == 1 {
-				eval += 3.0
-			}
-			if board.White.Bishops >> i % 2 == 1 {
-				eval += 3.0
-			}
-			if board.White.Rooks >> i % 2 == 1 {
-				eval += 5.0
-			}
-			if board.White.Queens >> i % 2 == 1 {
-				eval += 9.0
-			}
-		}
-		if board.Black.All >> i % 2 == 1 {
-			if board.Black.Pawns >> i % 2 == 1 {
-				eval -= 1.0
-			}
-			if board.Black.Knights >> i % 2 == 1 {
-				eval -= 3.0
-			}
-			if board.Black.Bishops >> i % 2 == 1 {
-				eval -= 3.0
-			}
-			if board.Black.Rooks >> i % 2 == 1 {
-				eval -= 5.0
-			}
-			if board.Black.Queens >> i % 2 == 1 {
-				eval -= 9.0
-			}
-		}
-	}
-
-	eval/=15
-	// TODO: make sure this doesnt lead to missing mate
-
-	if board.Wtomove {
-		eval = -eval
-	}
-
-	return eval
-}
-
-type monteCarloNode struct {
-	Parent *monteCarloNode
-	Children []*monteCarloNode
+type MonteCarloNode struct {
+	Parent *MonteCarloNode
+	Children []*MonteCarloNode //TODO: consider making this just a list of nodes and run benchmarks
 	Moves []dragontoothmg.Move
 	Value float64
 	Visits float64
