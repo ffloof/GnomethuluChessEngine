@@ -10,24 +10,22 @@ import (
 func main(){
 	searcher := mcts.NewSearch(dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"), UCT, Evaluate)
 	
-	for true {
-		searcher.RunIterations(1000000)
+	searcher.RunIterations(1000000)
 
-		/*
-		explore := searcher.Head
-		for i, child := range explore.Children {
-			fmt.Println(i, explore.Moves[i].String(), child.Visits, child.Value/child.Visits)
-		} */
-		best := searcher.GetBestMove()
-		fmt.Println(best.String())
-		searcher.ApplyMove(best)
+	
+	explore := searcher.Head
+	for i, child := range explore.Children {
+		fmt.Println(i, explore.Moves[i].String(), child.Visits, child.Value/child.Visits)
 	}
+	best := searcher.GetBestMove()
+	fmt.Println(best.String())
+	searcher.ApplyMove(best)
 
 }
 
 
 func UCT(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
-	c := 0.4
+	c := 0.3
 	return (child.Value/child.Visits) + math.Sqrt(c*math.Log(parent.Visits)/child.Visits) 
 }
 
