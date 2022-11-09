@@ -7,12 +7,17 @@ import (
 )
 
 func main(){
-	startpos := dragontoothmg.ParseFen("rnbqkb1r/ppp1pppp/8/8/2BPn3/8/PP3PPP/RNBQK1NR w KQkq - 0 5")
-	fmt.Println(mcts.Evaluate(startpos))
+	startpos := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 
 	searcher := mcts.NewSearch(startpos)
-	searcher.RunIterations(100000)
-	test := searcher.GetBestMove()
-	fmt.Println(test.String())
-
+	searcher.RunIterations(1000000)
+	
+	explore := searcher.Head
+	for i, child := range explore.Children {
+		fmt.Println(i, explore.Moves[i].String(), child.Visits, child.Value/child.Visits)
+	}
+	a := searcher.GetBestMove()
+	fmt.Println(a.String())
 }
+
+	
