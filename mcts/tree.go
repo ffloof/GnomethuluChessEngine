@@ -2,6 +2,7 @@ package mcts
 
 import (
 	"github.com/dylhunn/dragontoothmg"
+	"time"
 )
 
 type MonteCarloTreeSearcher struct {
@@ -24,6 +25,20 @@ func (mcts MonteCarloTreeSearcher) RunIterations(n int) {
 	for i := 0; i < n; i++ {
 		mcts.iteration()
 	}
+}
+
+func (mcts MonteCarloTreeSearcher) RunTime(seconds float64) int {
+	start := time.Now()
+	count := 0
+	for true {
+		mcts.RunIterations(1000)
+		count += 1000
+		elapsed := time.Since(start)
+		if float64(elapsed.Milliseconds()) / 1000 > seconds  {
+			break
+		}
+	}
+	return count
 }
 
 func (mcts *MonteCarloTreeSearcher) ApplyMove(move dragontoothmg.Move) {
