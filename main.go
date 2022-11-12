@@ -1,14 +1,17 @@
 package main
 
 import (
-	//"fmt"
+	/*
+	"fmt"
+	
+	"github.com/dylhunn/dragontoothmg"
+	*/
 	"gnomethulu/mcts"
 	"gnomethulu/uci"
-
-	//"github.com/dylhunn/dragontoothmg"
 )
 
 func main() {
+	//fmt.Println(mcts.Evaluate(dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")))
 	uci.Init(mcts.UCT, mcts.Evaluate)
 	//Starts at bottom goes left to right
 	
