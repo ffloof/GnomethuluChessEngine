@@ -13,10 +13,11 @@ func UCT(parent, child *MonteCarloNode, parentBoard dragontoothmg.Board, move dr
 // Development tables to encourage pieces to be on certain ranks
 
 // Suggested on: https://www.chessprogramming.org/Simplified_Evaluation_Function
+// TODO: try replacing with pesto eval
 // With slight modifications
 const pawnWeight float64 = 1.0
-const knightWeight float64 = 3.2
-const bishopWeight float64 = 3.3
+const knightWeight float64 = 3.0
+const bishopWeight float64 = 3.2
 const rookWeight float64 = 5.0
 const queenWeight float64 = 9.0
 
@@ -32,22 +33,22 @@ func reverse(s [64]float64) [64]float64{
 var pawnDevelopment = reverse([64]float64{
 	 0,  0,  0,  0,  0,  0,  0,  0,
 	50, 50, 50, 50, 50, 50, 50, 50,
-	10, 10, 20, 30, 30, 20, 10, 10,
-	 5,  5, 10, 25, 25, 10,  5,  5,
-	 0,  0,  0, 20, 20,  0,  0,  0,
+	10, 10, 20, 25, 25, 20, 10, 10,
+	 5,  5, 10, 30, 30, 10,  5,  5,
+	 0,  0,  0, 30, 30,  0,  0,  0,
 	 5, -5,-10,  0,  0,-10, -5,  5,
 	 5, 10, 10,-20,-20, 10, 10,  5,
 	 0,  0,  0,  0,  0,  0,  0,  0,
 })
 var knightDevelopment = reverse([64]float64{
-	-50,-40,-30,-30,-30,-30,-40,-50,
+	-50,-30,-20,-20,-20,-20,-30,-50,
 	-40,-20,  0,  0,  0,  0,-20,-40,
 	-30,  0, 10, 15, 15, 10,  0,-30,
 	-30,  5, 15, 20, 20, 15,  5,-30,
 	-30,  0, 15, 20, 20, 15,  0,-30,
 	-30,  5, 10, 15, 15, 10,  5,-30,
 	-40,-20,  0,  5,  5,  0,-20,-40,
-	-50,-40,-30,-30,-30,-30,-40,-50,
+	-50,-30,-20,-20,-20,-20,-30,-50,
 })
 var bishopDevelopment = reverse([64]float64{
 	-20,-10,-10,-10,-10,-10,-10,-20,
@@ -61,13 +62,13 @@ var bishopDevelopment = reverse([64]float64{
 })
 var rookDevelopment = reverse([64]float64{
 	  0,  0,  0,  0,  0,  0,  0,  0,
-	  5, 10, 10, 10, 10, 10, 10,  5,
+	  5, 15, 15, 15, 15, 15, 15,  5,
 	 -5,  0,  0,  0,  0,  0,  0, -5,
 	 -5,  0,  0,  0,  0,  0,  0, -5,
 	 -5,  0,  0,  0,  0,  0,  0, -5,
 	 -5,  0,  0,  0,  0,  0,  0, -5,
 	 -5,  0,  0,  0,  0,  0,  0, -5,
-	  0,  0,  0,  5,  5,  0,  0,  0,
+	  0,  0,  5,  10, 10, 5, 0,  0,
 })
 var queenDevelopment = reverse([64]float64{
 	-20,-10,-10, -5, -5,-10,-10,-20,
