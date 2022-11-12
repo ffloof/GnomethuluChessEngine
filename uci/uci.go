@@ -52,6 +52,10 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 				searcher = searcher
 			case "position":
 				fenString := strings.TrimSpace(GetStringBefore(arguments, "moves"))
+				if fenString == "" {
+					fenString = "startpos"
+				}
+
 				moveStrings := strings.Split(strings.TrimSpace(GetStringAfter(arguments, "moves")), " ")
 				if fenString != "startpos" {
 					searcher.SetPosition(fenString)
