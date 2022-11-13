@@ -1,25 +1,57 @@
 package mcts
 
+
 import (
 	"github.com/dylhunn/dragontoothmg"
 	"math"
 )
+// TODO: move this stuff into its own package make it easier to test in tournaments
 
 func UCT(parent, child *MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
-	c := 0.1
-	return (child.Value / child.Visits) + math.Sqrt(c*math.Log(parent.Visits)/child.Visits)
+	c := 0.2
+	multiplier := 1.0
+	if dragontoothmg.IsCapture(move, &parentBoard) {
+		multiplier = 1.5
+	}
+	return (child.Value / child.Visits) + (multiplier * math.Sqrt(c*math.Log(parent.Visits)/child.Visits))
 }
 
-// Development tables to encourage pieces to be on certain ranks
-
-// Suggested on: https://www.chessprogramming.org/Simplified_Evaluation_Function
-// TODO: try replacing with pesto eval
-// With slight modifications
 const pawnWeight float64 = 1.0
-const knightWeight float64 = 3.0
+const knightWeight float64 = 2.8
 const bishopWeight float64 = 3.2
 const rookWeight float64 = 5.0
 const queenWeight float64 = 9.0
+
+// PESTO Eval
+/*
+const mgPawn float64 = 0.82
+const mgKnight float64 = 3.37
+const mgBishop float64 = 3.65
+const mgRook float64 = 4.47
+const mgQueen float64 = 10.25
+const mgKing float64 = 0.0
+
+const egPawn float64 = 0.94
+const egKnight float64 = 2.81
+const egBishop float64 = 2.97
+const egRook float64 = 5.12
+const egQueen float64 = 9.36
+const egKing float64 = 0.0
+
+const mgPawnTable [64]float64 = {}
+const mgKnightTable [64]float64 = {}
+const mgBishopTable [64]float64 = {}
+const mgRookTable [64]float64 = {}
+const mgQueenTable [64]float64 = {}
+const mgKingTable [64]float64 = {}
+
+const egPawnTable [64]float64 = {}
+const egKnightTable [64]float64 = {}
+const egBishopTable [64]float64 = {}
+const egRookTable [64]float64 = {}
+const egQueenTable [64]float64 = {}
+const egKingTable [64]float64 = {}
+*/
 
 //TODO: make boards symmetric so it doesnt inverse ranks
 func reverse(s [64]float64) [64]float64{
@@ -62,15 +94,15 @@ var knightDevelopment = reverse([64]float64{
 	-30,  0, 15, 20, 20, 15,  0,-30,
 	-30,  5, 10, 15, 15, 10,  5,-30,
 	-40,-20,  0,  5,  5,  0,-20,-40,
-	-50,-30,-20,-20,-20,-20,-30,-50,
+	-50,-20,-20,-20,-20,-20,-20,-50,
 })
 var bishopDevelopment = reverse([64]float64{
 	-20,-10,-10,-10,-10,-10,-10,-20,
 	-10,  0,  0,  0,  0,  0,  0,-10,
 	-10,  0,  5, 10, 10,  5,  0,-10,
 	-10,  5,  5, 10, 10,  5,  5,-10,
-	-10,  0, 10, 10, 10, 10,  0,-10,
-	-10, 10, 10, 10, 10, 10, 10,-10,
+	-10,  5, 15, 10, 10, 15,  5,-10,
+	-10, 10, 10,  5,  5, 10, 10,-10,
 	-10,  5,  0,  0,  0,  0,  5,-10,
 	-20,-10,-10,-10,-10,-10,-10,-20,
 })
@@ -82,7 +114,7 @@ var rookDevelopment = reverse([64]float64{
 	 -5,  0,  0,  0,  0,  0,  0, -5,
 	 -5,  0,  0,  0,  0,  0,  0, -5,
 	 -5,  0,  0,  0,  0,  0,  0, -5,
-	  0,  0,  5,  10, 10, 5, 0,  0,
+	  0,  0,  5,  10, 10, 5,  0,  0,
 })
 var queenDevelopment = reverse([64]float64{
 	-20,-10,-10, -5, -5,-10,-10,-20,
@@ -204,14 +236,17 @@ func Evaluate(board dragontoothmg.Board) float64 {
 	return SigmoidLike(eval)
 }
 
+const sigmoid_c float64  = 0.3
+const sigmoid_range float64 = 0.9
 
 
 // Very similar to a signmoid function except its on the range [-1,1]
 // Play with c and a parameters
 func SigmoidLike(n float64) float64 {
-	c := 1.0
-	a := 1.0
+	n *= sigmoid_c
+	return ((2*sigmoid_range) / (1 + math.Exp(-n))) - sigmoid_range
+}
 
-	n *= c
-	return ((2*a) / (1 + math.Exp(-n))) - a
+func inverseSigmoid(n float64) float64 {
+	return -math.Log(((2 *sigmoid_range)/(n+sigmoid_range))-1)/sigmoid_c
 }

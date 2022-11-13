@@ -3,6 +3,8 @@ package mcts
 import (
 	"github.com/dylhunn/dragontoothmg"
 	"time"
+	"fmt"
+	"sort"
 )
 
 type MonteCarloTreeSearcher struct {
@@ -58,6 +60,43 @@ func (mcts *MonteCarloTreeSearcher) ApplyStr (movestr string) *MonteCarloTreeSea
 func (mcts MonteCarloTreeSearcher) RunIterations(n int) {
 	for i := 0; i < n; i++ {
 		mcts.iteration()
+	}
+}
+
+func (mcts MonteCarloTreeSearcher) RunInfinite(stop chan bool) {
+	n := 0
+	for true {
+		if len(stop) != 0{
+			return
+		}
+		mcts.RunIterations(50000)
+		n += 50000
+		//fmt.Println("info nodes", n)
+		
+		//bestIndex := 0
+		//bestAverage := -1.0
+		moveMap := map[dragontoothmg.Move]float64{}
+		for i, move := range mcts.Head.Moves {
+			moveMap[move] = mcts.Head.Children[i].Value / mcts.Head.Children[i].Visits
+		}
+
+		keys := make([]dragontoothmg.Move, 0, len(moveMap))
+		for k := range moveMap {
+			keys = append(keys, k)
+		}
+
+		sort.SliceStable(keys, func(i, j int) bool {
+			return moveMap[keys[i]] > moveMap[keys[j]]
+		})
+
+		for i, key := range keys {
+			if i + 1 > 3{
+				break
+			}
+			move := key.String()
+			eval := moveMap[key]
+			fmt.Println("info nodes", n ,"multipv", i+1 ,"score cp", int(inverseSigmoid(eval) * 100), "pv", move)
+		}		
 	}
 }
 

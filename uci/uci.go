@@ -14,6 +14,7 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 	reader := bufio.NewReader(os.Stdin)
 
 	searcher := mcts.NewSearch(treeFunc, evalFunc)
+	stop := make(chan bool)
 
 	f, _ := os.Create("./input_log.txt")
  	w := bufio.NewWriter(f)
@@ -66,22 +67,30 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 					searcher.ApplyStr(move)
 				}
 			case "go":
-				timethinker := GetStringAfter(arguments,"movetime")
-				if timethinker != "" {
-					i, _ := strconv.Atoi(strings.TrimSpace(timethinker))
-					searcher.RunTime(float64(i)/1000)
-					move := searcher.GetBestMove()
-					fmt.Println("bestmove", move.String())
+				if strings.Contains(arguments, "infinite") {
+					stop = make(chan bool)
+					go searcher.RunInfinite(stop)
+				} else {
+					timethinker := GetStringAfter(arguments,"movetime")
+					if timethinker != "" {
+						i, _ := strconv.Atoi(strings.TrimSpace(timethinker))
+						searcher.RunTime(float64(i)/1000)
+						move := searcher.GetBestMove()
+						fmt.Println("bestmove", move.String())
+					} else {
+						// Use time controls
+					}
 				}
+
+				
 
 				//TODO: use channels to let ai respond while thinking
 				//TODO: constantly transmit data
 			case "stop":
+				stop <- true
 				move := searcher.GetBestMove()
 				fmt.Println("bestmove", move.String())
-				fmt.Println("info string", "stop", arguments)
 		}
-		
 	}
 }
 
