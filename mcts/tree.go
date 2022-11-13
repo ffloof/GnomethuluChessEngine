@@ -11,8 +11,15 @@ func (mcts MonteCarloTreeSearcher) iteration() {
 	board := mcts.BaseState
 	node := mcts.Head
 
+	previousBoards := map[dragontoothmg.Board]bool{}
+
 selectionLoop:
 	for true {
+		if previousBoards[board] {
+			evaluation = 0.0
+			break selectionLoop
+		}
+
 		if len(node.Moves) == 0 {
 			if board.OurKingInCheck() {
 				evaluation = 1.0
@@ -26,6 +33,7 @@ selectionLoop:
 		for i := range node.Children {
 			if node.Children[i] == nil {
 				// 2. Expansion and Evaluation
+				previousBoards[board] = true
 				board.Apply(node.Moves[i])
 
 				nextNode := newNode(node, board)
@@ -47,6 +55,7 @@ selectionLoop:
 			}
 		}
 
+		previousBoards[board] = true
 		board.Apply(node.Moves[bestChildIndex])
 		node = node.Children[bestChildIndex]
 	}

@@ -87,8 +87,8 @@ var earlyKingDevelopment = reverse([64]float64{
 	-30,-40,-40,-50,-50,-40,-40,-30,
 	-20,-30,-30,-40,-40,-30,-30,-20,
 	-10,-20,-20,-20,-20,-20,-20,-10,
-	 20, 20,  0,  0,  0,  0, 20, 20,
-	 20, 30, 10,  0,  0, 10, 30, 20,
+	 20, 20,-10,-10,-10,-10, 20, 20,
+	 20, 30, 10,-10,  0,-10, 30, 20,
 })
 var lateKingDevelopment = reverse([64]float64{
 	-50,-40,-30,-20,-20,-30,-40,-50,
@@ -104,6 +104,9 @@ var lateKingDevelopment = reverse([64]float64{
 func Evaluate(board dragontoothmg.Board) float64 {
 	eval := 0.0
 
+	minorCount := 0
+	queens := 0
+
 	for i := 0; i < 64; i++ {
 		if board.White.All>>i%2 == 1 {
 			if board.White.Pawns>>i%2 == 1 {
@@ -113,10 +116,12 @@ func Evaluate(board dragontoothmg.Board) float64 {
 			if board.White.Knights>>i%2 == 1 {
 				eval += knightWeight
 				eval += knightDevelopment[i]
+				minorCount += 1
 			}
 			if board.White.Bishops>>i%2 == 1 {
 				eval += bishopWeight
 				eval += bishopDevelopment[i]
+				minorCount += 1
 			}
 			if board.White.Rooks>>i%2 == 1 {
 				eval += rookWeight
@@ -125,10 +130,7 @@ func Evaluate(board dragontoothmg.Board) float64 {
 			if board.White.Queens>>i%2 == 1 {
 				eval += queenWeight
 				eval += queenDevelopment[i]
-
-			}
-			if board.White.Kings>>i%2 == 1 {
-				eval += earlyKingDevelopment[i]
+				queens += 1
 			}
 		} else if board.Black.All>>i%2 == 1 {
 			j := 63-i
@@ -140,10 +142,12 @@ func Evaluate(board dragontoothmg.Board) float64 {
 			if board.Black.Knights>>i%2 == 1 {
 				eval -= knightWeight
 				eval -= knightDevelopment[j]
+				minorCount += 1
 			}
 			if board.Black.Bishops>>i%2 == 1 {
 				eval -= bishopWeight
 				eval -= bishopDevelopment[j]
+				minorCount += 1
 			}
 			if board.Black.Rooks>>i%2 == 1 {
 				eval -= rookWeight
@@ -152,9 +156,26 @@ func Evaluate(board dragontoothmg.Board) float64 {
 			if board.Black.Queens>>i%2 == 1 {
 				eval -= queenWeight
 				eval -= queenDevelopment[j]
+				queens += 1
 			}
-			if board.Black.Kings>>i%2 == 1 {
-				eval -= earlyKingDevelopment[j]
+			
+		}
+	}
+
+	for i := 0; i < 64; i++ {
+		if board.White.Kings>>i%2 == 1 {
+			if queens == 0 || minorCount < 2 {
+				eval += lateKingDevelopment[i]
+			} else {
+				eval += earlyKingDevelopment[i]
+			}
+		}
+
+		if board.Black.Kings>>i%2 == 1 {
+			if queens == 0 || minorCount < 2 {
+				eval -= lateKingDevelopment[i]
+			} else {
+				eval -= earlyKingDevelopment[i]
 			}
 		}
 	}
