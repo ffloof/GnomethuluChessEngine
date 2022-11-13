@@ -196,20 +196,22 @@ func Evaluate(board dragontoothmg.Board) float64 {
 		}
 	}
 
-	eval /= 15
 	// TODO: make sure this doesnt lead to missing mate
-
 	if board.Wtomove {
 		eval = -eval
 	}
 
-	return eval
-	//return SigmoidLike(eval)
+	return SigmoidLike(eval)
 }
 
+
+
 // Very similar to a signmoid function except its on the range [-1,1]
+// Play with c and a parameters
 func SigmoidLike(n float64) float64 {
-	c := 1.0 // TODO: play around with tweaking c based off eval func
-	a := 0.9
-	return ((2*a) / (1 + math.Exp(-n*c))) - a
+	c := 1.0
+	a := 1.0
+
+	n *= c
+	return ((2*a) / (1 + math.Exp(-n))) - a
 }
