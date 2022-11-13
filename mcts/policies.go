@@ -30,7 +30,7 @@ func reverse(s [64]float64) [64]float64{
 }
 
 // NOTE: indexing is in reverse so white pieces on top
-var pawnDevelopment = reverse([64]float64{
+var earlyPawnDevelopment = reverse([64]float64{
 	 0,  0,  0,  0,  0,  0,  0,  0,
 	50, 50, 50, 50, 50, 50, 50, 50,
 	10, 10, 20, 25, 25, 20, 10, 10,
@@ -40,6 +40,20 @@ var pawnDevelopment = reverse([64]float64{
 	 5, 10, 10,-20,-20, 10, 10,  5,
 	 0,  0,  0,  0,  0,  0,  0,  0,
 })
+
+var latePawnDevelopment = reverse([64]float64{
+	 0,   0,  0,  0,  0,  0,  0,  0,
+	 88, 99, 99, 99, 99, 99, 99, 88,
+	 44, 49, 49, 49, 49, 49, 49, 44,
+	 33, 28, 28, 28, 28, 28, 28, 33,
+	  0,  5,  5,  5,  5,  5,  5,  0,
+	-10, -5, -5, -5, -5, -5, -5,-10,
+	-20,-15,-15,-15,-15,-15,-15,-20,
+	  0,  0,  0,  0,  0,  0,  0,  0,
+})
+
+
+
 var knightDevelopment = reverse([64]float64{
 	-50,-30,-20,-20,-20,-20,-30,-50,
 	-40,-20,  0,  0,  0,  0,-20,-40,
@@ -88,7 +102,7 @@ var earlyKingDevelopment = reverse([64]float64{
 	-20,-30,-30,-40,-40,-30,-30,-20,
 	-10,-20,-20,-20,-20,-20,-20,-10,
 	 20, 20,-10,-10,-10,-10, 20, 20,
-	 20, 30, 10,-10,  0,-10, 30, 20,
+	 20, 30, 10,-20,  0,-20, 30, 20,
 })
 var lateKingDevelopment = reverse([64]float64{
 	-50,-40,-30,-20,-20,-30,-40,-50,
@@ -111,23 +125,18 @@ func Evaluate(board dragontoothmg.Board) float64 {
 		if board.White.All>>i%2 == 1 {
 			if board.White.Pawns>>i%2 == 1 {
 				eval += pawnWeight
-				eval += pawnDevelopment[i]
-			}
-			if board.White.Knights>>i%2 == 1 {
+			} else if board.White.Knights>>i%2 == 1 {
 				eval += knightWeight
 				eval += knightDevelopment[i]
 				minorCount += 1
-			}
-			if board.White.Bishops>>i%2 == 1 {
+			} else if board.White.Bishops>>i%2 == 1 {
 				eval += bishopWeight
 				eval += bishopDevelopment[i]
 				minorCount += 1
-			}
-			if board.White.Rooks>>i%2 == 1 {
+			} else if board.White.Rooks>>i%2 == 1 {
 				eval += rookWeight
 				eval += rookDevelopment[i]
-			}
-			if board.White.Queens>>i%2 == 1 {
+			} else if board.White.Queens>>i%2 == 1 {
 				eval += queenWeight
 				eval += queenDevelopment[i]
 				queens += 1
@@ -137,23 +146,18 @@ func Evaluate(board dragontoothmg.Board) float64 {
 
 			if board.Black.Pawns>>i%2 == 1 {
 				eval -= pawnWeight
-				eval -= pawnDevelopment[j]
-			}
-			if board.Black.Knights>>i%2 == 1 {
+			} else if board.Black.Knights>>i%2 == 1 {
 				eval -= knightWeight
 				eval -= knightDevelopment[j]
 				minorCount += 1
-			}
-			if board.Black.Bishops>>i%2 == 1 {
+			} else if board.Black.Bishops>>i%2 == 1 {
 				eval -= bishopWeight
 				eval -= bishopDevelopment[j]
 				minorCount += 1
-			}
-			if board.Black.Rooks>>i%2 == 1 {
+			} else if board.Black.Rooks>>i%2 == 1 {
 				eval -= rookWeight
 				eval -= rookDevelopment[j]
-			}
-			if board.Black.Queens>>i%2 == 1 {
+			} else if board.Black.Queens>>i%2 == 1 {
 				eval -= queenWeight
 				eval -= queenDevelopment[j]
 				queens += 1
@@ -163,19 +167,31 @@ func Evaluate(board dragontoothmg.Board) float64 {
 	}
 
 	for i := 0; i < 64; i++ {
-		if board.White.Kings>>i%2 == 1 {
-			if queens == 0 || minorCount < 2 {
+		j := 63-i
+		if queens == 0 || minorCount < 2 {
+			if board.White.Pawns>>i%2 == 1 {
+				eval += latePawnDevelopment[i]
+			} else if board.White.Kings>>i%2 == 1 {
 				eval += lateKingDevelopment[i]
-			} else {
-				eval += earlyKingDevelopment[i]
-			}
-		}
+			} 
 
-		if board.Black.Kings>>i%2 == 1 {
-			if queens == 0 || minorCount < 2 {
-				eval -= lateKingDevelopment[i]
-			} else {
-				eval -= earlyKingDevelopment[i]
+			if board.Black.Pawns>>i%2==1{
+				eval -= latePawnDevelopment[j]
+			} else if board.Black.Kings>>i%2 == 1 {
+				eval -= lateKingDevelopment[j]
+			}
+
+		} else {
+			if board.White.Pawns>>i%2 == 1 {
+				eval += earlyPawnDevelopment[i]
+			} else if board.White.Kings>>i%2 == 1 {
+				eval += earlyKingDevelopment[i]
+			} 
+
+			if board.Black.Pawns>>i%2==1{
+				eval -= earlyPawnDevelopment[j]
+			} else if board.Black.Kings>>i%2 == 1 {
+				eval -= earlyKingDevelopment[j]
 			}
 		}
 	}
@@ -194,5 +210,6 @@ func Evaluate(board dragontoothmg.Board) float64 {
 // Very similar to a signmoid function except its on the range [-1,1]
 func SigmoidLike(n float64) float64 {
 	c := 1.0 // TODO: play around with tweaking c based off eval func
-	return (2 / (1 + math.Exp(-n*c))) - 1
+	a := 0.9
+	return ((2*a) / (1 + math.Exp(-n*c))) - a
 }
