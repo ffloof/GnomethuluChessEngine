@@ -62,18 +62,9 @@ selectionLoop:
 
 	// 3. Backpropogation
 
-	endMinMax := false
 	for node != nil {
 		node.Visits++
 		node.Value += evaluation
-		if !endMinMax { //TODO: this minmax doesnt work perfectly
-			if evaluation > node.MinMax {
-				node.MinMax = evaluation
-			} else {
-				endMinMax = true
-			}
-		}
-
 		evaluation = -evaluation
 		node = node.Parent
 	}
@@ -90,7 +81,6 @@ func newNode(parent *MonteCarloNode, board dragontoothmg.Board) *MonteCarloNode 
 		Moves:    moves,
 		Value:    0.0,
 		Visits:   0.0,
-		MinMax:   -1.0,
 	}
 }
 
@@ -100,5 +90,4 @@ type MonteCarloNode struct {
 	Moves    []dragontoothmg.Move
 	Value    float64
 	Visits   float64
-	MinMax   float64
 }
