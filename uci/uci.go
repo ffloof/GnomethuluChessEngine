@@ -41,7 +41,10 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 			case "uci":
 				fmt.Println("id name Gnomethulu")
 				fmt.Println("id author ffloof")
-				fmt.Println("option name Worthless type spin default 1 min 1 max 128")
+				fmt.Println("option name policyexplore type spin default 20 min 1 max 200")
+				fmt.Println("option name policycapture type spin default 150 min 0 max 200")
+				fmt.Println("option name sigmoidscale type spin default 90 min 1 max 200")
+				fmt.Println("option name sigmoidcurve type spin default 30 min 1 max 200")
 				//TODO: add options here
 				fmt.Println("uciok")
 			case "isready":
@@ -78,18 +81,50 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 						move := searcher.GetBestMove()
 						fmt.Println("bestmove", move.String())
 					} else {
-						// Use time controls
+						// TODO:  Use time controls
+						searcher.RunTime(5.0)
+						move := searcher.GetBestMove()
+						fmt.Println("bestmove", move.String())
 					}
 				}
-
-				
-
 				//TODO: use channels to let ai respond while thinking
 				//TODO: constantly transmit data
 			case "stop":
 				stop <- true
 				move := searcher.GetBestMove()
 				fmt.Println("bestmove", move.String())
+			case "setoption":
+				peStr := GetStringAfter(arguments, "policyexplore")
+				if peStr != "" {
+					temp, err := strconv.Atoi(peStr)
+					if err == nil {
+					mcts.PolicyExplore = float64(temp)/100
+					}
+				}
+				pcStr := GetStringAfter(arguments, "policycapture")
+				if pcStr != "" {
+					temp, err := strconv.Atoi(pcStr)
+					if err == nil {
+						mcts.PolicyCapture = float64(temp)/100
+					}
+				}
+				ssStr := GetStringAfter(arguments, "sigmoidscale")
+				if ssStr != "" {
+					temp, err := strconv.Atoi(ssStr)
+					if err == nil {
+						mcts.SigmoidScale = float64(temp)/100
+					}
+				}
+				scStr := GetStringAfter(arguments, "sigmoidcurve")
+				if scStr != "" {
+					temp, err := strconv.Atoi(scStr)
+					if err == nil {
+						mcts.SigmoidCurve = float64(temp)/100
+					}
+				}
+				
+				
+				
 		}
 	}
 }
@@ -99,7 +134,7 @@ func GetStringBefore(str string, end string) string {
 	if e == -1 {
 		return ""
 	}
-	return str[:e]
+	return strings.TrimSpace(str[:e])
 }
 
 func GetStringAfter(str string, start string) string {
@@ -107,5 +142,5 @@ func GetStringAfter(str string, start string) string {
 	if s == -1 {
 		return ""
 	}
-	return str[s+len(start):]
+	return strings.TrimSpace(str[s+len(start):])
 }

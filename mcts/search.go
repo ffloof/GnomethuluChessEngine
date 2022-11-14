@@ -63,6 +63,8 @@ func (mcts MonteCarloTreeSearcher) RunIterations(n int) {
 	}
 }
 
+var hard_breakpoint int = 1000000
+
 func (mcts MonteCarloTreeSearcher) RunInfinite(stop chan bool) {
 	n := 0
 	for true {
@@ -71,10 +73,14 @@ func (mcts MonteCarloTreeSearcher) RunInfinite(stop chan bool) {
 		}
 		mcts.RunIterations(50000)
 		n += 50000
-		//fmt.Println("info nodes", n)
+
+		if n > hard_breakpoint {
+			leave := <- stop
+			leave = leave
+			return
+		}
+
 		
-		//bestIndex := 0
-		//bestAverage := -1.0
 		moveMap := map[dragontoothmg.Move]float64{}
 		for i, move := range mcts.Head.Moves {
 			moveMap[move] = mcts.Head.Children[i].Value / mcts.Head.Children[i].Visits
