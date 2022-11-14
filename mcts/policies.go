@@ -24,8 +24,9 @@ func UCT(parent, child *MonteCarloNode, parentBoard dragontoothmg.Board, move dr
 //TODO: see if its worth creating two arrays one inversed and one not so that it doesnt have to do i^56 at runtime
 func reverse(fixed int, s [64]int) [64]float64{
 	var newS [64]float64
-	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
-		newS[i], newS[j] = (float64(fixed+s[j]))/100, (float64(fixed+s[i]))/100
+	for i := 0; i < 64; i++ {
+		j := i ^ 56
+		newS[j] = float64(fixed+s[i])/100
 	}
 	return newS
 }
