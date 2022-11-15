@@ -18,17 +18,16 @@ func NewSearch(tree func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, 
 	board := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 	mcts := MonteCarloTreeSearcher{
 		BaseState: board,
-		Head:      nil,
+		Head:      newNode(nil, board),
 		treeFunc:  tree,
 		evalFunc:  eval,
 	}
-	mcts.Head = mcts.newNode(nil, board)
 	return mcts
 }
 
 func (mcts *MonteCarloTreeSearcher) SetPosition(fen string){
 	mcts.BaseState = dragontoothmg.ParseFen(fen)
-	mcts.Head = mcts.newNode(nil, mcts.BaseState)
+	mcts.Head = newNode(nil, mcts.BaseState)
 }
 
 func (mcts *MonteCarloTreeSearcher) ApplyMove (nextMove dragontoothmg.Move) *MonteCarloTreeSearcher {
@@ -42,7 +41,7 @@ func (mcts *MonteCarloTreeSearcher) ApplyMove (nextMove dragontoothmg.Move) *Mon
 	}
 
 	if nextNode == nil {
-		mcts.Head = mcts.newNode(nil, mcts.BaseState)
+		mcts.Head = newNode(nil, mcts.BaseState)
 	} else {
 		nextNode.Parent = nil
 		mcts.Head = nextNode
