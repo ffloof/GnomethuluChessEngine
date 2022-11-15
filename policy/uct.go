@@ -17,3 +17,12 @@ func UCT(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board, mo
 	}
 	return (child.Value / child.Visits) + (multiplier * math.Sqrt(c*math.Log(parent.Visits)/child.Visits))
 }
+
+func MM_UCT(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
+	c := 0.6
+	multiplier := 1.0
+	if dragontoothmg.IsCapture(move, &parentBoard) {
+		multiplier = PolicyCapture
+	}
+	return ((-child.Max + (child.Value/child.Visits))/2) + (multiplier * math.Sqrt(c*math.Log(parent.Visits)/child.Visits))
+}

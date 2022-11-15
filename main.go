@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	uci.Init(policy.UCT, evaluation.Pesto)
+	uci.Init(policy.MM_UCT, evaluation.Pesto)
 	
 	/*
 	searcher := mcts.NewSearch(mcts.UCT, mcts.Evaluate)
