@@ -6,23 +6,17 @@ import (
 
 func (mcts MonteCarloTreeSearcher) iteration() {
 	evaluation := 0.0
+	max := 0.0
 
 	// 1. Selection
 	board := mcts.BaseState
 	node := mcts.Head
 
-	previousBoards := map[dragontoothmg.Board]bool{}
-
 selectionLoop:
 	for true {
-		if previousBoards[board] {
-			evaluation = 0.0
-			break selectionLoop
-		}
-
 		if len(node.Moves) == 0 {
 			if board.OurKingInCheck() {
-				evaluation = 1.0
+				evaluation = -1.0
 			} else {
 				evaluation = 0.0
 			}
@@ -33,7 +27,6 @@ selectionLoop:
 		for i := range node.Children {
 			if node.Children[i] == nil {
 				// 2. Expansion and Evaluation
-				previousBoards[board] = true
 				board.Apply(node.Moves[i])
 
 				nextNode := newNode(node, board)
@@ -55,17 +48,29 @@ selectionLoop:
 			}
 		}
 
-		previousBoards[board] = true
 		board.Apply(node.Moves[bestChildIndex])
 		node = node.Children[bestChildIndex]
 	}
 
 	// 3. Backpropogation
+	max = evaluation
 
 	for node != nil {
+		evaluation = -evaluation
+
 		node.Visits++
 		node.Value += evaluation
-		evaluation = -evaluation
+
+		for _, child := range node.Children {
+			if child != nil {
+				if -child.Max > max {
+					max = -child.Max
+				}
+			}
+		}
+		node.Max = max
+
+		max = -max
 		node = node.Parent
 	}
 }
@@ -81,13 +86,15 @@ func newNode(parent *MonteCarloNode, board dragontoothmg.Board) *MonteCarloNode 
 		Moves:    moves,
 		Value:    0.0,
 		Visits:   0.0,
+		Max: 0.0,
 	}
 }
 
 type MonteCarloNode struct {
 	Parent   *MonteCarloNode
-	Children []*MonteCarloNode //TODO: consider making this just a list of nodes and run benchmarks
+	Children []*MonteCarloNode
 	Moves    []dragontoothmg.Move
-	Value    float64
+	Value    float64 //Represents the utility of choosing this node among its sibblings
 	Visits   float64
+	Max float64 // Represents the best possible outcome from this node playing maximizingly (inverse sign of .Value)
 }

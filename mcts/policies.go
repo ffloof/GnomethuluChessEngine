@@ -7,7 +7,7 @@ import (
 )
 // TODO: move this stuff into its own package make it easier to test in tournaments
 
-var PolicyExplore float64 = 0.2
+var PolicyExplore float64 = 2.0
 var PolicyCapture float64 = 1.5
 
 func UCT(parent, child *MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
@@ -37,7 +37,7 @@ var mgPawnTable [64]float64 = reverse(82, [64]int{
 	 -6,   7,  26,  31,  65,  56, 25, -20,
 	-14,  13,   6,  21,  23,  12, 17, -23,
 	-27,  -2,  -5,  12,  17,   6, 10, -25,
-	-26,  -4,  -4, -10,   3,   3, 33, -12,
+	-26,  -4,  -4,  -5,   3,   3, 33, -12,
 	-35,  -1, -20, -23, -17,  24, 38, -22,
 	  0,   0,   0,   0,   0,   0,  0,   0,
 })
@@ -231,7 +231,7 @@ func Evaluate(board dragontoothmg.Board) float64 {
 
 	eval := ((midScore * float64(phase)) + (endScore * float64(24-phase)))/24 
 
-	if board.Wtomove {
+	if !board.Wtomove {
 		eval = -eval
 	}
 
