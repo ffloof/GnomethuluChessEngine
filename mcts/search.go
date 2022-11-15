@@ -16,17 +16,19 @@ type MonteCarloTreeSearcher struct {
 
 func NewSearch(tree func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64, eval func(dragontoothmg.Board) float64) MonteCarloTreeSearcher {
 	board := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-	return MonteCarloTreeSearcher{
+	mcts := MonteCarloTreeSearcher{
 		BaseState: board,
-		Head:      newNode(nil, board),
+		Head:      nil,
 		treeFunc:  tree,
 		evalFunc:  eval,
 	}
+	mcts.Head = mcts.newNode(nil, board)
+	return mcts
 }
 
 func (mcts *MonteCarloTreeSearcher) SetPosition(fen string){
 	mcts.BaseState = dragontoothmg.ParseFen(fen)
-	mcts.Head = newNode(nil, mcts.BaseState)
+	mcts.Head = mcts.newNode(nil, mcts.BaseState)
 }
 
 func (mcts *MonteCarloTreeSearcher) ApplyMove (nextMove dragontoothmg.Move) *MonteCarloTreeSearcher {
@@ -40,7 +42,7 @@ func (mcts *MonteCarloTreeSearcher) ApplyMove (nextMove dragontoothmg.Move) *Mon
 	}
 
 	if nextNode == nil {
-		mcts.Head = newNode(nil, mcts.BaseState)
+		mcts.Head = mcts.newNode(nil, mcts.BaseState)
 	} else {
 		nextNode.Parent = nil
 		mcts.Head = nextNode

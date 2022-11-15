@@ -231,7 +231,7 @@ func Evaluate(board dragontoothmg.Board) float64 {
 
 	eval := ((midScore * float64(phase)) + (endScore * float64(24-phase)))/24 
 
-	if board.Wtomove {
+	if !board.Wtomove {
 		eval = -eval
 	}
 

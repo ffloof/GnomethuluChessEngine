@@ -1,34 +1,28 @@
 package main
 
 import (
-	/*
-	"fmt"
-	
-	"github.com/dylhunn/dragontoothmg"
-	*/
-	"gnomethulu/mcts"
-	"gnomethulu/uci"
+	"fmt"	
+	"gnomethulu/mcts" 
+	//"gnomethulu/uci"
 )
 
 func main() {
-	//fmt.Println(mcts.Evaluate(dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")))
-	uci.Init(mcts.UCT, mcts.Evaluate)
-	//Starts at bottom goes left to right
+	//uci.Init(mcts.UCT, mcts.Evaluate)
 	
-	/*
 	searcher := mcts.NewSearch(mcts.UCT, mcts.Evaluate)
-	searcher.ApplyStr("d2d4").ApplyStr("d4d5").ApplyStr("c2c4")
+	searcher.SetPosition("rnbqkbnr/1ppp1ppp/p7/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3")
+	//searcher.ApplyStr("e2e4").ApplyStr("e7e5").ApplyStr("f1c4").ApplyStr("b8c6").ApplyStr("d1f3").ApplyStr("b6b7")
+	
 
 	fmt.Println(searcher.RunTime(5.0))
 
 	//f3e5, 
 	explore := searcher.Head
 	for i, child := range explore.Children {
-		fmt.Println(i, explore.Moves[i].String(), child.Visits, child.Value/child.Visits)
+		fmt.Println(i, explore.Moves[i].String(), child.Visits, child.Value/child.Visits, child.Max)
 	}
 	best := searcher.GetBestMove()
 	fmt.Println(best.String())
-	searcher.ApplyMove(best)
-	*/
+	searcher.ApplyMove(best)	
 }
 

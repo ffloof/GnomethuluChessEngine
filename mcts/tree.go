@@ -5,27 +5,15 @@ import (
 )
 
 func (mcts MonteCarloTreeSearcher) iteration() {
-	evaluation := 0.0
-
 	// 1. Selection
 	board := mcts.BaseState
 	node := mcts.Head
 
-	previousBoards := map[dragontoothmg.Board]bool{}
 
 selectionLoop:
 	for true {
-		if previousBoards[board] {
-			evaluation = 0.0
-			break selectionLoop
-		}
-
 		if len(node.Moves) == 0 {
-			if board.OurKingInCheck() {
-				evaluation = 1.0
-			} else {
-				evaluation = 0.0
-			}
+			//TODO: possibly node=node.Parent goes here
 			break selectionLoop
 		}
 		// If any null node exists expand it otherwise choose the one with best uct score
@@ -33,14 +21,12 @@ selectionLoop:
 		for i := range node.Children {
 			if node.Children[i] == nil {
 				// 2. Expansion and Evaluation
-				previousBoards[board] = true
 				board.Apply(node.Moves[i])
 
-				nextNode := newNode(node, board)
+				nextNode := mcts.newNode(node, board)
 				node.Children[i] = nextNode
 
 				node = nextNode
-				evaluation = mcts.evalFunc(board)
 				break selectionLoop
 			}
 		}
@@ -55,32 +41,57 @@ selectionLoop:
 			}
 		}
 
-		previousBoards[board] = true
 		board.Apply(node.Moves[bestChildIndex])
 		node = node.Children[bestChildIndex]
 	}
 
+
 	// 3. Backpropogation
+	evaluation := -node.Max
+	max := node.Max
+
 
 	for node != nil {
+		for _, child := range node.Children {
+			if child != nil {
+				if -child.Max > max {
+					max = -child.Max
+				}
+			}
+		}
+
+		node.Max = max
+
 		node.Visits++
 		node.Value += evaluation
 		evaluation = -evaluation
+		max = -max
 		node = node.Parent
 	}
 }
 
-func newNode(parent *MonteCarloNode, board dragontoothmg.Board) *MonteCarloNode {
+//TODO: make this part of mcts possibly so evalFunc doesnt need to be passed
+func (mcts MonteCarloTreeSearcher) newNode(parent *MonteCarloNode, board dragontoothmg.Board) *MonteCarloNode {
 	moves := board.GenerateLegalMoves()
 
 	children := make([]*MonteCarloNode, len(moves), len(moves))
+	eval := 0.0
+	if len(moves) == 0 {
+		if board.OurKingInCheck() {
+			eval = -1.0 //Got checkmated
+		}
+		//Stalemate
+	} else {
+		eval = mcts.evalFunc(board) //Non terminal
+	}
 
 	return &MonteCarloNode{
 		Parent:   parent,
 		Children: children,
 		Moves:    moves,
-		Value:    0.0,
-		Visits:   0.0,
+		Value:    eval,
+		Visits:   1.0,
+		Max: eval,
 	}
 }
 
@@ -88,6 +99,7 @@ type MonteCarloNode struct {
 	Parent   *MonteCarloNode
 	Children []*MonteCarloNode //TODO: consider making this just a list of nodes and run benchmarks
 	Moves    []dragontoothmg.Move
-	Value    float64
+	Value    float64 
 	Visits   float64
+	Max float64
 }
