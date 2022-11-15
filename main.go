@@ -2,12 +2,13 @@ package main
 
 import (
 	//"fmt"	
-	"gnomethulu/mcts" 
+	"gnomethulu/evaluation"
+	"gnomethulu/policy"
 	"gnomethulu/uci"
 )
 
 func main() {
-	uci.Init(mcts.UCT, mcts.Evaluate)
+	uci.Init(policy.UCT, evaluation.Pesto)
 	
 	/*
 	searcher := mcts.NewSearch(mcts.UCT, mcts.Evaluate)

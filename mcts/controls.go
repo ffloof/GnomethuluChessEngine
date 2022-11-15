@@ -3,26 +3,15 @@ package mcts
 import (
 	"github.com/dylhunn/dragontoothmg"
 	"time"
-	"fmt"
 	"sort"
+	"fmt"
+	"math"
 )
 
-type MonteCarloTreeSearcher struct {
-	BaseState dragontoothmg.Board
-	Head      *MonteCarloNode
-	treeFunc  func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64
-	evalFunc  func(dragontoothmg.Board) float64
-}
-
-func NewSearch(tree func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64, eval func(dragontoothmg.Board) float64) MonteCarloTreeSearcher {
-	board := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-	mcts := MonteCarloTreeSearcher{
-		BaseState: board,
-		Head:      newNode(nil, board),
-		treeFunc:  tree,
-		evalFunc:  eval,
-	}
-	return mcts
+func inverseSigmoid(n float64) float64 {
+	SigmoidScale := 0.99
+	SigmoidCurve := 0.25
+	return -math.Log(((2 *SigmoidScale)/(n+SigmoidScale))-1)/SigmoidCurve
 }
 
 func (mcts *MonteCarloTreeSearcher) SetPosition(fen string){
@@ -57,6 +46,9 @@ func (mcts *MonteCarloTreeSearcher) ApplyStr (movestr string) *MonteCarloTreeSea
 		return nil
 	}
 }
+
+
+
 
 func (mcts MonteCarloTreeSearcher) RunIterations(n int) {
 	for i := 0; i < n; i++ {

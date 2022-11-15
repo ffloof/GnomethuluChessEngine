@@ -1,24 +1,9 @@
-package mcts
-
+package evaluation
 
 import (
 	"github.com/dylhunn/dragontoothmg"
 	"math"
 )
-// TODO: move this stuff into its own package make it easier to test in tournaments
-
-var PolicyExplore float64 = 2.0
-var PolicyCapture float64 = 1.5
-
-func UCT(parent, child *MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
-	c := PolicyExplore
-	multiplier := 1.0
-	if dragontoothmg.IsCapture(move, &parentBoard) {
-		multiplier = PolicyCapture
-	}
-	return (child.Value / child.Visits) + (multiplier * math.Sqrt(c*math.Log(parent.Visits)/child.Visits))
-}
-
 
 // Tables for pesto eval
 //TODO: see if its worth creating two arrays one inversed and one not so that it doesnt have to do i^56 at runtime
@@ -166,7 +151,7 @@ var egKingTable [64]float64 = reverse(0,[64]int{
 
 
 //TODO: convert stuff in eval to int operations, with cast to float at end and compare speed
-func Evaluate(board dragontoothmg.Board) float64 {
+func Pesto(board dragontoothmg.Board) float64 {
 	phase := 0
 	midScore := 0.0
 	endScore := 0.0
@@ -249,6 +234,3 @@ func SigmoidLike(n float64) float64 {
 	return ((2*SigmoidScale) / (1 + math.Exp(-n))) - SigmoidScale
 }
 
-func inverseSigmoid(n float64) float64 {
-	return -math.Log(((2 *SigmoidScale)/(n+SigmoidScale))-1)/SigmoidCurve
-}
