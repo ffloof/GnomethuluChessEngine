@@ -10,7 +10,7 @@ func main() {
 	//uci.Init(mcts.UCT, mcts.Evaluate)
 	
 	searcher := mcts.NewSearch(mcts.UCT, mcts.Evaluate)
-	searcher.SetPosition("rnbqkbnr/1ppp1ppp/p7/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 3")
+	searcher.SetPosition("6rk/1p2RQpp/p4p2/5q2/5P1K/6P1/PP5P/8 b - - 0 29")
 	//searcher.ApplyStr("e2e4").ApplyStr("e7e5").ApplyStr("f1c4").ApplyStr("b8c6").ApplyStr("d1f3").ApplyStr("b6b7")
 	
 
@@ -23,6 +23,6 @@ func main() {
 	}
 	best := searcher.GetBestMove()
 	fmt.Println(best.String())
-	searcher.ApplyMove(best)	
+	searcher.ApplyMove(best)
 }
 

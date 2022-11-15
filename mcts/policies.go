@@ -7,7 +7,7 @@ import (
 )
 // TODO: move this stuff into its own package make it easier to test in tournaments
 
-var PolicyExplore float64 = 0.2
+var PolicyExplore float64 = 2.0
 var PolicyCapture float64 = 1.5
 
 func UCT(parent, child *MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
