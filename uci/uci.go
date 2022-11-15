@@ -76,10 +76,15 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 				} else {
 					timethinker := GetStringAfter(arguments,"movetime")
 					if timethinker != "" {
-						i, _ := strconv.Atoi(strings.TrimSpace(timethinker))
-						searcher.RunTime(float64(i)/1000)
-						move := searcher.GetBestMove()
-						fmt.Println("bestmove", move.String())
+						moves := searcher.BaseState.GenerateLegalMoves()
+						if len(moves) == 0 {
+							fmt.Println("bestmove", moves[0].String())
+						} else {
+							i, _ := strconv.Atoi(strings.TrimSpace(timethinker))
+							searcher.RunTime(float64(i)/1000)
+							move := searcher.GetBestMove()
+							fmt.Println("bestmove", move.String())
+						}
 					} else {
 						// TODO:  Use time controls
 						searcher.RunTime(5.0)
