@@ -16,7 +16,7 @@ selectionLoop:
 	for true {
 		if len(node.Moves) == 0 {
 			if board.OurKingInCheck() {
-				evaluation = 1.0
+				evaluation = -1.0
 			} else {
 				evaluation = 0.0
 			}
@@ -53,9 +53,11 @@ selectionLoop:
 	}
 
 	// 3. Backpropogation
-	max = -evaluation
+	max = evaluation
 
 	for node != nil {
+		evaluation = -evaluation
+
 		node.Visits++
 		node.Value += evaluation
 
@@ -69,7 +71,6 @@ selectionLoop:
 		node.Max = max
 
 		max = -max
-		evaluation = -evaluation
 		node = node.Parent
 	}
 }
@@ -91,9 +92,9 @@ func newNode(parent *MonteCarloNode, board dragontoothmg.Board) *MonteCarloNode 
 
 type MonteCarloNode struct {
 	Parent   *MonteCarloNode
-	Children []*MonteCarloNode //TODO: consider making this just a list of nodes and run benchmarks
+	Children []*MonteCarloNode
 	Moves    []dragontoothmg.Move
-	Value    float64
+	Value    float64 //Represents the utility of choosing this node among its sibblings
 	Visits   float64
-	Max float64
+	Max float64 // Represents the best possible outcome from this node playing maximizingly (inverse sign of .Value)
 }
