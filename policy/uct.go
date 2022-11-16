@@ -6,7 +6,7 @@ import (
 	"math"
 )
 
-var PolicyExplore float64 = 2.0
+var PolicyExplore float64 = 0.5
 var PolicyCapture float64 = 1.5
 
 func UCT(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
@@ -57,6 +57,7 @@ func MM_UCT1(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board
 	return winrate + (multiplier *(math.Sqrt(c*math.Log(parent.Visits)/child.Visits)))
 }
 
+
 func MM_UCT2(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
 	c := 0.5
 	multiplier := 1.0
@@ -64,11 +65,11 @@ func MM_UCT2(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board
 		multiplier = PolicyCapture
 	}
 
-	winrate := (child.Value/child.Visits)
-	difference := 0.0
-	if winrate > -child.Max {
-		difference = abs(child.Max + winrate)
-	}
+	//Correct Bonus: bonus for paths where parent minmax is close to (child action or child minmax)
+	//Surprise Bonus: bonus for paths where child action and child minmax vary
 
-	return winrate + (difference) + (multiplier *(math.Sqrt(c*math.Log(parent.Visits)/child.Visits)))
+	multiplier_2 := 2.0+abs((child.Value/child.Visits) + child.Max)
+	
+
+	return (child.Value / child.Visits) + (multiplier_2 * multiplier * math.Sqrt(c*math.Log(parent.Visits)/child.Visits))
 }
