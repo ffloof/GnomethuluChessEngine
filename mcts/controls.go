@@ -76,7 +76,9 @@ func (mcts MonteCarloTreeSearcher) RunInfinite(stop chan bool) {
 		
 		moveMap := map[dragontoothmg.Move]float64{}
 		for i, move := range mcts.Head.Moves {
+			//moveMap[move] = ((mcts.Head.Children[i].Value / mcts.Head.Children[i].Visits) -mcts.Head.Children[i].Max)/2
 			moveMap[move] = mcts.Head.Children[i].Value / mcts.Head.Children[i].Visits
+			//moveMap[move] = -mcts.Head.Children[i].Max
 		}
 
 		keys := make([]dragontoothmg.Move, 0, len(moveMap))
