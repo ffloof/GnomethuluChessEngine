@@ -5,11 +5,11 @@ import (
 	"gnomethulu/evaluation"
 	"gnomethulu/policy"
 	"gnomethulu/mcts"
-	//"gnomethulu/uci"
+	"gnomethulu/uci"
 )
 
 func main() {
-	//uci.Init(policy.UCT, evaluation.Pesto)
+	uci.Init(policy.MM_UCT, evaluation.Pesto)
 	
 	
 	searcher := mcts.NewSearch(policy.MM_UCT, evaluation.Pesto)

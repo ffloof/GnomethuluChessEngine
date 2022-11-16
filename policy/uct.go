@@ -15,6 +15,7 @@ func UCT(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board, mo
 	if dragontoothmg.IsCapture(move, &parentBoard) {
 		capture_multiplier = PolicyCapture
 	}
+	//TODO: see if moving capture_multiplier to first term gives any improvement
 	return (child.Value / child.Visits) + (capture_multiplier * math.Sqrt(c*math.Log(parent.Visits)/child.Visits))
 }
 
@@ -27,7 +28,7 @@ func abs(n float64) float64 {
 
 
 func MM_UCT(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
-	c := 0.6
+	c := 2.0
 	capture_multiplier := 1.0
 	if dragontoothmg.IsCapture(move, &parentBoard) {
 		capture_multiplier = PolicyCapture
@@ -35,13 +36,10 @@ func MM_UCT(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board,
 
 	action := child.Value/child.Visits
 
-	//Action Bonus: bonus for paths where parent minmax is close to (child action or child minmax) TODO: figure which best
 
-	correctBonus := parent.Max + child.Max + 1.0
+	// TODO: fix the names because neither name is accurate or true
+	correctBonus := 2.0 - (parent.Max + child.Max)
+	exploreBonus := 1+abs((action + child.Max)/2)
 
-	//Explore bonus: for paths where child action and child minmax vary
-	
-	exploreBonus := 1+((action + child.Max)/2)
-
-	return (action * correctBonus) + (exploreBonus * capture_multiplier  * math.Sqrt(c*math.Log(parent.Visits)/child.Visits))
+	return (action * correctBonus * exploreBonus) + (capture_multiplier  * math.Sqrt(c*math.Log(parent.Visits)/child.Visits))
 }
