@@ -39,7 +39,7 @@ func MM_UCT(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board,
 
 	// TODO: fix the names because neither name is accurate or true
 	correctBonus := 2.0 - (parent.Max + child.Max)
-	exploreBonus := 1+abs((action + child.Max)/2)
+	exploreBonus := 1.0 + abs((action + child.Max)/2)
 
 	return (action * correctBonus * exploreBonus) + (capture_multiplier  * math.Sqrt(c*math.Log(parent.Visits)/child.Visits))
 }
