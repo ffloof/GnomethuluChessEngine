@@ -11,11 +11,11 @@ var PolicyCapture float64 = 1.5
 
 func UCT(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
 	c := PolicyExplore
-	multiplier := 1.0
+	capture_multiplier := 1.0
 	if dragontoothmg.IsCapture(move, &parentBoard) {
-		multiplier = PolicyCapture
+		capture_multiplier = PolicyCapture
 	}
-	return (child.Value / child.Visits) + (multiplier * math.Sqrt(c*math.Log(parent.Visits)/child.Visits))
+	return (child.Value / child.Visits) + (capture_multiplier * math.Sqrt(c*math.Log(parent.Visits)/child.Visits))
 }
 
 func abs(n float64) float64 {
@@ -25,51 +25,23 @@ func abs(n float64) float64 {
 	return n
 }
 
-func max1(n float64) float64 {
-	if n > 1 {
-		return 1
-	}
-	return n
-}
 
-func MM_UCT1(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
-	c := 0.5
-	multiplier := 1.0
+func MM_UCT(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
+	c := 0.6
+	capture_multiplier := 1.0
 	if dragontoothmg.IsCapture(move, &parentBoard) {
-		multiplier = PolicyCapture
+		capture_multiplier = PolicyCapture
 	}
 
-	winrate := (child.Value/child.Visits)
-	difference := 0.0
-	if winrate > -child.Max {
-		difference = abs(child.Max + winrate)
-	}
+	action := child.Value/child.Visits
 
-	if difference != 0.0 {
-		if child.Visits > 100 {
-			return winrate + (difference) + (multiplier *(math.Sqrt(c*math.Log(parent.Visits)/child.Visits)))
-		} else {
-			if parent.Max == -child.Max {
-				return 100
-			}
-		}
-	}
-	return winrate + (multiplier *(math.Sqrt(c*math.Log(parent.Visits)/child.Visits)))
-}
+	//Action Bonus: bonus for paths where parent minmax is close to (child action or child minmax) TODO: figure which best
 
+	correctBonus := parent.Max + child.Max + 1.0
 
-func MM_UCT2(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
-	c := 0.5
-	multiplier := 1.0
-	if dragontoothmg.IsCapture(move, &parentBoard) {
-		multiplier = PolicyCapture
-	}
-
-	//Correct Bonus: bonus for paths where parent minmax is close to (child action or child minmax)
-	//Surprise Bonus: bonus for paths where child action and child minmax vary
-
-	multiplier_2 := 2.0+abs((child.Value/child.Visits) + child.Max)
+	//Explore bonus: for paths where child action and child minmax vary
 	
+	exploreBonus := 1+((action + child.Max)/2)
 
-	return (child.Value / child.Visits) + (multiplier_2 * multiplier * math.Sqrt(c*math.Log(parent.Visits)/child.Visits))
+	return (action * correctBonus) + (exploreBonus * capture_multiplier  * math.Sqrt(c*math.Log(parent.Visits)/child.Visits))
 }
