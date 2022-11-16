@@ -45,7 +45,16 @@ func MM_UCT1(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board
 		difference = abs(child.Max + winrate)
 	}
 
-	return winrate + (difference) + (multiplier *(math.Sqrt(c*math.Log(parent.Visits)/child.Visits)))
+	if difference != 0.0 {
+		if child.Visits > 100 {
+			return winrate + (difference) + (multiplier *(math.Sqrt(c*math.Log(parent.Visits)/child.Visits)))
+		} else {
+			if parent.Max == -child.Max {
+				return 100
+			}
+		}
+	}
+	return winrate + (multiplier *(math.Sqrt(c*math.Log(parent.Visits)/child.Visits)))
 }
 
 func MM_UCT2(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
