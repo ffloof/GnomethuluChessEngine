@@ -20,7 +20,7 @@ func (mcts *MonteCarloTreeSearcher) SetPosition(nextState dragontoothmg.Board){
 	for i, move := range mcts.Head.Moves {
 		testBoard := mcts.BaseState
 		testBoard.Apply(move)
-		if nextState == testBoard {
+		if nextState == testBoard && mcts.Head.Children[i] != nil {
 			// Can use information from pondering / previous move analysis
 			mcts.BaseState = nextState
 			mcts.Head = mcts.Head.Children[i]
