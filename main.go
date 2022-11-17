@@ -1,16 +1,18 @@
 package main
 
 import (
-	//"fmt"	
+	"fmt"	
 	"gnomethulu/evaluation"
 	"gnomethulu/policy"
 	//"gnomethulu/mcts"
 	"gnomethulu/uci"
-	//"github.com/dylhunn/dragontoothmg"
+	"github.com/dylhunn/dragontoothmg"
 )
 
 func main() {
-	uci.Init(policy.UCT, evaluation.PestoQuiescenceWrapper)
+	fmt.Println(evaluation.PestoQuiescence(dragontoothmg.ParseFen("r2q1rk1/pppb1pbp/2n1pnp1/3p4/3PP3/1PN2NP1/PBP2PBP/R2Q1RK1 b - - 0 9")))
+
+	uci.Init(policy.UCT, evaluation.PestoQuiescence)
 	/*
 	
 	
