@@ -158,6 +158,16 @@ func Wrapper(board dragontoothmg.Board) float64 {
 //TODO: add a small transposition table!
 //TODO: consider adding move ordering
 func PestoQuiescence(board dragontoothmg.Board, alpha, beta float64) float64 {
+	all_moves := board.GenerateLegalMoves()
+	
+	if len(all_moves) == 0 {
+		if board.OurKingInCheck() {
+			return -1.0
+		} else {
+			return 0.0
+		}
+	}
+
 	score := Pesto(board)
 	if score >= beta {
 		return score
@@ -166,9 +176,12 @@ func PestoQuiescence(board dragontoothmg.Board, alpha, beta float64) float64 {
 	if score >= alpha {
 		alpha = score
 	}
-
-	all_moves := board.GenerateLegalMoves()
+	
 	chosen_moves := []dragontoothmg.Move{}
+
+	if board.OurKingInCheck() {
+		chosen_moves = all_moves
+	} else {
 
 	for _, move := range all_moves {
 		if dragontoothmg.IsCapture(move, &board) {
@@ -194,15 +207,16 @@ func PestoQuiescence(board dragontoothmg.Board, alpha, beta float64) float64 {
 	}
 
 	sort.Slice(chosen_moves, Less_MVV_LVA)
+	}
 
 	for _, move := range chosen_moves {
 		if dragontoothmg.IsCapture(move, &board) {
-			newBoard := board
-			newBoard.Apply(move) 
+			undo := board.Apply(move) 
 			
-			score = -PestoQuiescence(newBoard, -beta, -alpha, )
+			score = -PestoQuiescence(board, -beta, -alpha)
 			
-			
+			undo()
+
 			if score >= alpha {
                 alpha = score   
                 if alpha >= beta {
