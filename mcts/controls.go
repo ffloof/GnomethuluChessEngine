@@ -64,8 +64,8 @@ func (mcts MonteCarloTreeSearcher) RunInfinite(stop chan bool) {
 		if len(stop) != 0{
 			return
 		}
-		mcts.RunIterations(50000)
-		n += 50000
+		mcts.RunIterations(10000)
+		n += 10000
 
 		if n > hard_breakpoint {
 			leave := <- stop

@@ -6,11 +6,13 @@ import (
 	"gnomethulu/policy"
 	//"gnomethulu/mcts"
 	"gnomethulu/uci"
+	//"github.com/dylhunn/dragontoothmg"
 )
 
 func main() {
-	uci.Init(policy.MM_UCT, evaluation.Pesto)
+	uci.Init(policy.UCT, evaluation.Wrapper)
 	/*
+	
 	
 	
 	searcher := mcts.NewSearch(policy.MM_UCT, evaluation.Wrapper)

@@ -6,7 +6,6 @@ import (
 
 func (mcts MonteCarloTreeSearcher) iteration() {
 	evaluation := 0.0
-	max := 0.0
 
 	// 1. Selection
 	board := mcts.BaseState
@@ -53,24 +52,11 @@ selectionLoop:
 	}
 
 	// 3. Backpropogation
-	max = evaluation
 
 	for node != nil {
 		evaluation = -evaluation
-
 		node.Visits++
 		node.Value += evaluation
-
-		for _, child := range node.Children {
-			if child != nil {
-				if -child.Max > max {
-					max = -child.Max
-				}
-			}
-		}
-		node.Max = max
-
-		max = -max
 		node = node.Parent
 	}
 }
@@ -86,7 +72,6 @@ func newNode(parent *MonteCarloNode, board dragontoothmg.Board) *MonteCarloNode 
 		Moves:    moves,
 		Value:    0.0,
 		Visits:   0.0,
-		Max: 0.0,
 	}
 }
 
@@ -96,7 +81,6 @@ type MonteCarloNode struct {
 	Moves    []dragontoothmg.Move
 	Value    float64 //Represents the utility of choosing this node among its sibblings
 	Visits   float64
-	Max float64 // Represents the best possible outcome from this node playing maximizingly (inverse sign of .Value)
 }
 
 type MonteCarloTreeSearcher struct {
