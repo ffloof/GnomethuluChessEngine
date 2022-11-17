@@ -136,7 +136,7 @@ var mgKingTable [64]int = reverse(0,[64]int{
 	-49,  -1, -27, -39, -46, -44, -33, -51,
 	-14, -14, -22, -46, -44, -30, -15, -27,
 	  1,   7,  -8, -64, -43, -16,   9,   8,
-	-15,  36,  12, -54,   8, -28,  24,  14,
+	-15,  36,  12, -54,   8, -28,  30,  14,
 })
 
 var egKingTable [64]int = reverse(0,[64]int{
@@ -151,7 +151,7 @@ var egKingTable [64]int = reverse(0,[64]int{
 })
 
 
-func Wrapper(board dragontoothmg.Board) float64 {
+func PestoQuiescenceWrapper(board dragontoothmg.Board) float64 {
 	return PestoQuiescence(board, -0.9, 0.9)
 }
 

@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	uci.Init(policy.UCT, evaluation.Wrapper)
+	uci.Init(policy.UCT, evaluation.PestoQuiescenceWrapper)
 	/*
 	
 	
