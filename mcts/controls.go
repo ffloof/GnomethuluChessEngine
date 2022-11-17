@@ -9,43 +9,30 @@ import (
 )
 
 func inverseSigmoid(n float64) float64 {
-	SigmoidScale := 0.99
+	SigmoidScale := 0.9
 	SigmoidCurve := 0.25
 	return -math.Log(((2 *SigmoidScale)/(n+SigmoidScale))-1)/SigmoidCurve
 }
 
-func (mcts *MonteCarloTreeSearcher) SetPosition(fen string){
-	mcts.BaseState = dragontoothmg.ParseFen(fen)
-	mcts.Head = newNode(nil, mcts.BaseState)
-}
 
-func (mcts *MonteCarloTreeSearcher) ApplyMove (nextMove dragontoothmg.Move) *MonteCarloTreeSearcher {
-	mcts.BaseState.Apply(nextMove)
-	var nextNode *MonteCarloNode
+
+func (mcts *MonteCarloTreeSearcher) SetPosition(nextState dragontoothmg.Board){
 	for i, move := range mcts.Head.Moves {
-		if move == nextMove{
-			nextNode = mcts.Head.Children[i]
-			break
+		testBoard := mcts.BaseState
+		testBoard.Apply(move)
+		if nextState == testBoard {
+			// Can use information from pondering / previous move analysis
+			mcts.BaseState = nextState
+			mcts.Head = mcts.Head.Children[i]
+			mcts.Head.Parent = nil
+			return
 		}
 	}
 
-	if nextNode == nil {
-		mcts.Head = newNode(nil, mcts.BaseState)
-	} else {
-		nextNode.Parent = nil
-		mcts.Head = nextNode
-	}
-	return mcts
+	mcts.BaseState = nextState
+	mcts.Head = newNode(nil, mcts.BaseState)
 }
 
-func (mcts *MonteCarloTreeSearcher) ApplyStr (movestr string) *MonteCarloTreeSearcher {
-	move, err := dragontoothmg.ParseMove(movestr)
-	if err == nil {
-		return mcts.ApplyMove(move)
-	} else {
-		return nil
-	}
-}
 
 
 
@@ -59,15 +46,13 @@ func (mcts MonteCarloTreeSearcher) RunIterations(n int) {
 var hard_breakpoint int = 1000000
 
 func (mcts MonteCarloTreeSearcher) RunInfinite(stop chan bool) {
-	n := 0
 	for true {
 		if len(stop) != 0{
 			return
 		}
 		mcts.RunIterations(10000)
-		n += 10000
 
-		if n > hard_breakpoint {
+		if int(mcts.Head.Visits) > hard_breakpoint {
 			leave := <- stop
 			leave = leave
 			return
@@ -76,9 +61,7 @@ func (mcts MonteCarloTreeSearcher) RunInfinite(stop chan bool) {
 		
 		moveMap := map[dragontoothmg.Move]float64{}
 		for i, move := range mcts.Head.Moves {
-			//moveMap[move] = ((mcts.Head.Children[i].Value / mcts.Head.Children[i].Visits) -mcts.Head.Children[i].Max)/2
 			moveMap[move] = mcts.Head.Children[i].Value / mcts.Head.Children[i].Visits
-			//moveMap[move] = -mcts.Head.Children[i].Max
 		}
 
 		keys := make([]dragontoothmg.Move, 0, len(moveMap))
@@ -96,7 +79,7 @@ func (mcts MonteCarloTreeSearcher) RunInfinite(stop chan bool) {
 			}
 			move := key.String()
 			eval := moveMap[key]
-			fmt.Println("info nodes", n ,"multipv", i+1 ,"score cp", int(inverseSigmoid(eval) * 100), "pv", move)
+			fmt.Println("info nodes", mcts.Head.Visits ,"multipv", i+1 ,"score cp", int(inverseSigmoid(eval) * 100), "pv", move)
 		}		
 	}
 }
@@ -113,6 +96,13 @@ func (mcts MonteCarloTreeSearcher) RunTime(seconds float64) int {
 		}
 	}
 	return count
+}
+
+type MonteCarloTreeSearcher struct {
+	BaseState dragontoothmg.Board
+	Head      *MonteCarloNode
+	treeFunc  func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64
+	evalFunc  func(dragontoothmg.Board) float64
 }
 
 func (mcts MonteCarloTreeSearcher) GetBestMove() dragontoothmg.Move {

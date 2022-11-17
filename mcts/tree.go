@@ -83,13 +83,6 @@ type MonteCarloNode struct {
 	Visits   float64
 }
 
-type MonteCarloTreeSearcher struct {
-	BaseState dragontoothmg.Board
-	Head      *MonteCarloNode
-	treeFunc  func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64
-	evalFunc  func(dragontoothmg.Board) float64
-}
-
 func NewSearch(tree func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64, eval func(dragontoothmg.Board) float64) MonteCarloTreeSearcher {
 	board := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 	mcts := MonteCarloTreeSearcher{

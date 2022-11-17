@@ -14,7 +14,7 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 	reader := bufio.NewReader(os.Stdin)
 
 	searcher := mcts.NewSearch(treeFunc, evalFunc)
-	stop := make(chan bool)
+	stop := make(chan bool, 1)
 
 	f, _ := os.Create("./input_log.txt")
  	w := bufio.NewWriter(f)
@@ -57,14 +57,24 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 				}
 
 				moveStrings := strings.Split(strings.TrimSpace(GetStringAfter(arguments, "moves")), " ")
+				
+				var board dragontoothmg.Board
 				if fenString != "startpos" {
-					searcher.SetPosition(fenString)
+					board = dragontoothmg.ParseFen(fenString)
 				} else {
-					searcher.SetPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+					board = dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 				}
-				for _, move := range moveStrings {
-					searcher.ApplyStr(move)
+				for _, movestr := range moveStrings {
+					if movestr != "" {
+						move, err := dragontoothmg.ParseMove(movestr)
+						if err != nil {
+							fmt.Println("info string", err, movestr)
+						}
+						board.Apply(move)
+					}
 				}
+				searcher.SetPosition(board)
+
 			case "go":
 				if strings.Contains(arguments, "infinite") {
 					stop = make(chan bool)

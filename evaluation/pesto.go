@@ -3,6 +3,7 @@ package evaluation
 import (
 	"github.com/dylhunn/dragontoothmg"
 	"math"
+	"sort"
 )
 
 // Tables for pesto eval
@@ -154,6 +155,8 @@ func Wrapper(board dragontoothmg.Board) float64 {
 	return PestoQuiescence(board, -0.9, 0.9)
 }
 
+//TODO: add a small transposition table!
+//TODO: consider adding move ordering
 func PestoQuiescence(board dragontoothmg.Board, alpha, beta float64) float64 {
 	score := Pesto(board)
 	if score >= beta {
@@ -164,25 +167,50 @@ func PestoQuiescence(board dragontoothmg.Board, alpha, beta float64) float64 {
 		alpha = score
 	}
 
-	moves := board.GenerateLegalMoves()
-	for _, move := range moves {
+	all_moves := board.GenerateLegalMoves()
+	chosen_moves := []dragontoothmg.Move{}
+
+	for _, move := range all_moves {
+		if dragontoothmg.IsCapture(move, &board) {
+			chosen_moves = append(chosen_moves, move)
+		}
+	}
+
+	
+	Less_MVV_LVA := func(c, d int) bool{
+		a := chosen_moves[c]
+		b := chosen_moves[d]
+
+		victimAType, _ := dragontoothmg.GetPieceType(a.To(), &board)
+		victimBType, _ := dragontoothmg.GetPieceType(b.To(), &board)
+
+		if victimAType != victimBType  {
+			return victimAType > victimBType
+		} else {
+			attackerAType, _ := dragontoothmg.GetPieceType(a.From(), &board)
+			attackerBType, _ := dragontoothmg.GetPieceType(b.From(), &board)
+			return attackerAType < attackerBType
+		}
+	}
+
+	sort.Slice(chosen_moves, Less_MVV_LVA)
+
+	for _, move := range chosen_moves {
 		if dragontoothmg.IsCapture(move, &board) {
 			newBoard := board
 			newBoard.Apply(move) 
 			score = -PestoQuiescence(newBoard, -beta, -alpha)
 			
-			if (score >= alpha) {
-                alpha = score
+			if score >= alpha {
+                alpha = score   
                 if alpha >= beta {
                 	break
-                }
+				}  
             }
 		}
 	}
 	return alpha
 }
-
-
 
 
 //TODO: convert stuff in eval to int operations, with cast to float at end and compare speed
