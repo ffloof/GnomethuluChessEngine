@@ -155,8 +155,7 @@ func Wrapper(board dragontoothmg.Board) float64 {
 	return PestoQuiescence(board, -0.9, 0.9)
 }
 
-//TODO: add a small transposition table!
-//TODO: consider adding move ordering
+// Consider transposition table and adding checks
 func PestoQuiescence(board dragontoothmg.Board, alpha, beta float64) float64 {
 	all_moves := board.GenerateLegalMoves()
 	
@@ -177,36 +176,44 @@ func PestoQuiescence(board dragontoothmg.Board, alpha, beta float64) float64 {
 		alpha = score
 	}
 	
-	chosen_moves := []dragontoothmg.Move{}
+	var chosen_moves []dragontoothmg.Move
+	promote_moves := []dragontoothmg.Move{} 
+	capture_moves := []dragontoothmg.Move{}
 
 	if board.OurKingInCheck() {
 		chosen_moves = all_moves
 	} else {
-
-	for _, move := range all_moves {
-		if dragontoothmg.IsCapture(move, &board) {
-			chosen_moves = append(chosen_moves, move)
+		for _, move := range all_moves {
+			promotePiece := move.Promote()
+			if promotePiece == dragontoothmg.Nothing {
+				if dragontoothmg.IsCapture(move, &board) {
+					capture_moves = append(chosen_moves, move)
+				} 
+			} else if promotePiece == dragontoothmg.Queen { //Queen
+				promote_moves = append(promote_moves, move)
+			}
 		}
-	}
 
-	
-	Less_MVV_LVA := func(c, d int) bool{
-		a := chosen_moves[c]
-		b := chosen_moves[d]
+		
+		Less_MVV_LVA := func(c, d int) bool{
+			a := capture_moves[c]
+			b := capture_moves[d]
 
-		victimAType, _ := dragontoothmg.GetPieceType(a.To(), &board)
-		victimBType, _ := dragontoothmg.GetPieceType(b.To(), &board)
+			victimAType, _ := dragontoothmg.GetPieceType(a.To(), &board)
+			victimBType, _ := dragontoothmg.GetPieceType(b.To(), &board)
 
-		if victimAType != victimBType  {
-			return victimAType > victimBType
-		} else {
-			attackerAType, _ := dragontoothmg.GetPieceType(a.From(), &board)
-			attackerBType, _ := dragontoothmg.GetPieceType(b.From(), &board)
-			return attackerAType < attackerBType
+			if victimAType != victimBType  {
+				return victimAType > victimBType
+			} else {
+				attackerAType, _ := dragontoothmg.GetPieceType(a.From(), &board)
+				attackerBType, _ := dragontoothmg.GetPieceType(b.From(), &board)
+				return attackerAType < attackerBType
+			}
 		}
-	}
 
-	sort.Slice(chosen_moves, Less_MVV_LVA)
+		sort.Slice(chosen_moves, Less_MVV_LVA)
+
+		chosen_moves = append(promote_moves, capture_moves...)
 	}
 
 	for _, move := range chosen_moves {
