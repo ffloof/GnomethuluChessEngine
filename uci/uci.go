@@ -93,13 +93,12 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 						}
 					} else {
 						// TODO:  Use time controls
-						searcher.RunTime(5.0)
+						searcher.RunTime(10.0)
 						move := searcher.GetBestMove()
 						fmt.Println("bestmove", move.String())
 					}
 				}
-				//TODO: use channels to let ai respond while thinking
-				//TODO: constantly transmit data
+				//TODO: make better use of channels
 			case "stop":
 				stop <- true
 				move := searcher.GetBestMove()

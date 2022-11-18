@@ -149,11 +149,6 @@ var egKingTable [64]int = reverse(0,[64]int{
 	-53, -34, -21, -11, -28, -14, -24, -43,
 })
 
-
-func PestoQuiescence(board dragontoothmg.Board) float64 {
-	return pestoQuiescence(board, -0.9, 0.9)
-}
-
 //TODO: convert stuff in eval to int operations, with cast to float at end and compare speed
 func Pesto(board dragontoothmg.Board) float64 {
 	phase := 0
@@ -238,3 +233,7 @@ func SigmoidLike(n float64) float64 {
 	return ((2*SigmoidScale) / (1 + math.Exp(-n))) - SigmoidScale
 }
 
+func PestoQuiescence(board dragontoothmg.Board) float64 {
+	//return pestoQuiescence(board,-0.9,0.9,12)
+	return pestoQuiescenceChecks(board, -0.9, 0.9, 4, board.OurKingInCheck(),12)
+}
