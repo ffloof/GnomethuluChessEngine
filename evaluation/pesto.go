@@ -222,7 +222,7 @@ func Pesto(board dragontoothmg.Board) float64 {
 	return SigmoidLike(eval)
 }
 
-var SigmoidCurve float64 = 0.5
+var SigmoidCurve float64 = 0.4
 var SigmoidScale float64 = 0.9
 
 
@@ -231,9 +231,4 @@ var SigmoidScale float64 = 0.9
 func SigmoidLike(n float64) float64 {
 	n *= SigmoidCurve
 	return ((2*SigmoidScale) / (1 + math.Exp(-n))) - SigmoidScale
-}
-
-func PestoQuiescence(board dragontoothmg.Board) float64 {
-	//return pestoQuiescence(board,-0.9,0.9,12)
-	return pestoQuiescenceChecks(board, -0.9, 0.9, 4, board.OurKingInCheck(),12)
 }

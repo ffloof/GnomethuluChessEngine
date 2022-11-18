@@ -5,6 +5,10 @@ import (
 	"github.com/dylhunn/dragontoothmg"
 )
 
+func PestoQuiescence(board dragontoothmg.Board) float64 {
+	return pestoQuiescence(board,-0.9,0.9,12)
+}
+
 // Consider transposition table and adding checks
 func pestoQuiescence(board dragontoothmg.Board, alpha, beta float64, maxdepth int) float64 {
 	if maxdepth <= 0 {
