@@ -6,25 +6,18 @@ import (
 
 type Entry struct {
 	hash uint64
-	score int16
-	best dragontoothmg.Move
-	depth int8
+	Score int16
+	BestMove dragontoothmg.Move
+	Depth int8
 	//TODO: prolly add age or something
 }
 
-type TranspositionTable struct {
-	entries []Entry
-}
-
-func NewTranspositionTable(size int) TranspositionTable {
-	return TranspositionTable{
-		entries : make([]Entry, size, size),
-	}
-}
+//TODO: make this a struct with a rw mutex
+type TranspositionTable []Entry
 
 //TODO: make sure to add checks and prioritize things
-func (table *TranspositionTable) Get(board *dragontoothmg.Board, depth int8) *Entry {
-	entry := &table.entries[board.Hash() % uint64(len(table.entries))]
+func (table TranspositionTable) Get(board *dragontoothmg.Board) *Entry {
+	entry := &table[board.Hash() % uint64(len(table))]
 	if board.Hash() == entry.hash  {
 		return entry
 	} else {
@@ -32,6 +25,6 @@ func (table *TranspositionTable) Get(board *dragontoothmg.Board, depth int8) *En
 	}
 }
 
-func (table *TranspositionTable) Set(board *dragontoothmg.Board, depth int8, score int16, best dragontoothmg.Move) {
-	table.entries[board.Hash() % uint64(len(table.entries))] = Entry{board.Hash(), score, best, depth}
+func (table TranspositionTable) Set(board *dragontoothmg.Board, depth int8, score int16, best dragontoothmg.Move) {
+	table[board.Hash() % uint64(len(table))] = Entry{board.Hash(), score, best, depth}
 } 
