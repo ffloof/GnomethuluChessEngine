@@ -1,6 +1,0 @@
-id name Gnomethulu
-id author ffloof
-option name policyexplore type spin default 20 min 1 max 200
-option name policycapture type spin default 150 min 0 max 200
-option name sigmoidscale type spin default 90 min 1 max 200
-option name sigmoidcurve type spin default 30 min 1 max 200
