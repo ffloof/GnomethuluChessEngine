@@ -8,12 +8,15 @@ import (
 
 func main(){
 	startpos := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-	var maxDepth int8 = 9
+	var maxDepth int8 = 7
 	fmt.Println(engine.NegaMax(&startpos,-9999,9999,maxDepth))
 	
-	var i int8
-	for i=maxDepth;i>=0;i-- {
+	i := maxDepth
+	for true {
+		_, contains := engine.DepthCount[i]
+		if !contains { break }
 		fmt.Println("DEPTH",maxDepth - i,":",engine.DepthCount[i])
+		i--
 	}
 	fmt.Println(engine.TTable.EmptyPercent())
 }
@@ -79,4 +82,43 @@ DEPTH 5 : 6752
 DEPTH 6 : 6226                                                                                                                              
 DEPTH 7 : 122476                                                                                                                            
 DEPTH 8 : 594904
+*/
+
+/*
+DEPTH 0 : 1                                                                                                                                           
+DEPTH 1 : 20                                                                                                                                          
+DEPTH 2 : 39                                                                                                                                          
+DEPTH 3 : 464                                                                                                                                         
+DEPTH 4 : 852                                                                                                                                         
+DEPTH 5 : 7776                                                                                                                                        
+DEPTH 6 : 21659                                                                                                                                       
+DEPTH 7 : 482646                                                                                                                                      
+DEPTH 8 : 1454502                                                                                                                                     
+DEPTH 9 : 2034476                                                                                                                                     
+DEPTH 10 : 670131                                                                                                                                     
+DEPTH 11 : 805531                                                                                                                                     
+DEPTH 12 : 539496                                                                                                                                     
+DEPTH 13 : 482121                                                                                                                                     
+DEPTH 14 : 274553                                                                                                                                     
+DEPTH 15 : 230777                                                                                                                                     
+DEPTH 16 : 136835                                                                                                                                     
+DEPTH 17 : 160970                                                                                                                                     
+DEPTH 18 : 86525                                                                                                                                      
+DEPTH 19 : 96915                                                                                                                                      
+DEPTH 20 : 51527                                                                                                                                      
+DEPTH 21 : 64587                                                                                                                                      
+DEPTH 22 : 32052                                                                                                                                      
+DEPTH 23 : 36761                                                                                                                                      
+DEPTH 24 : 17041                                                                                                                                      
+DEPTH 25 : 17181                                                                                                                                      
+DEPTH 26 : 7454                                                                                                                                       
+DEPTH 27 : 7782                                                                                                                                       
+DEPTH 28 : 3507                                                                                                                                       
+DEPTH 29 : 1900                                                                                                                                       
+DEPTH 30 : 736                                                                                                                                        
+DEPTH 31 : 127                                                                                                                                        
+DEPTH 32 : 8                                                                                                                                          
+DEPTH 33 : 39                                                                                                                                         
+DEPTH 34 : 2                                                                                                                                          
+DEPTH 35 : 9
 */
