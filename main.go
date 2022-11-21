@@ -84,7 +84,7 @@ DEPTH 7 : 122476
 DEPTH 8 : 594904
 */
 
-/*
+/* Full Quiescence Search
 DEPTH 0 : 1                                                                                                                                           
 DEPTH 1 : 20                                                                                                                                          
 DEPTH 2 : 39                                                                                                                                          
@@ -121,4 +121,41 @@ DEPTH 32 : 8
 DEPTH 33 : 39                                                                                                                                         
 DEPTH 34 : 2                                                                                                                                          
 DEPTH 35 : 9
+
+Quiescence Search With Captures Only
+DEPTH 0 : 1                                                                                                                                           
+DEPTH 1 : 20                                                                                                                                          
+DEPTH 2 : 39                                                                                                                                          
+DEPTH 3 : 464                                                                                                                                         
+DEPTH 4 : 852                                                                                                                                         
+DEPTH 5 : 7776                                                                                                                                        
+DEPTH 6 : 21656                                                                                                                                       
+DEPTH 7 : 482467                                                                                                                                      
+DEPTH 8 : 102037                                                                                                                                      
+DEPTH 9 : 55315                                                                                                                                       
+DEPTH 10 : 42895                                                                                                                                      
+DEPTH 11 : 39017                                                                                                                                      
+DEPTH 12 : 34761                                                                                                                                      
+DEPTH 13 : 23922                                                                                                                                      
+DEPTH 14 : 17110                                                                                                                                      
+DEPTH 15 : 13269                                                                                                                                      
+DEPTH 16 : 9758                                                                                                                                       
+DEPTH 17 : 8097                                                                                                                                       
+DEPTH 18 : 5553                                                                                                                                       
+DEPTH 19 : 4355                                                                                                                                       
+DEPTH 20 : 3142                                                                                                                                       
+DEPTH 21 : 2563                                                                                                                                       
+DEPTH 22 : 1786                                                                                                                                       
+DEPTH 23 : 1281                                                                                                                                       
+DEPTH 24 : 897                                                                                                                                        
+DEPTH 25 : 670                                                                                                                                        
+DEPTH 26 : 436                                                                                                                                        
+DEPTH 27 : 259                                                                                                                                        
+DEPTH 28 : 185                                                                                                                                        
+DEPTH 29 : 79                                                                                                                                         
+DEPTH 30 : 15                                                                                                                                         
+DEPTH 31 : 2                                                                                                                                          
+DEPTH 32 : 3                                                                                                                                          
+DEPTH 33 : 1                                                                                                                                          
+DEPTH 34 : 1
 */
