@@ -4,49 +4,53 @@ import (
 	"github.com/dylhunn/dragontoothmg"
 )
 
-type Searcher struct {
-	Table TranspositionTable
-}
+var DepthCount map[int8]int = map[int8]int{}
 
-func (search *Searcher) NegaMax(board *dragontoothmg.Board, alpha, beta int16, depth int8) int16 {
-	entry := search.Table.Get(board)
+var TTable = make(TranspositionTable, 20*1024*1024, 20*1024*1024) //20MB * struct size
+var Misses int
+
+//Simplified minmax with ab pruning
+func NegaMax(board *dragontoothmg.Board, alpha, beta int16, depth int8) int16 {
+	DepthCount[depth] += 1
+
+	entry := TTable.Get(board)
 	if entry != nil {
 		if depth <= entry.Depth {
 			return entry.Score
-		} else {
-			//TODO: set best move to be tried first somehow
 		}
 	}
 
 	if depth == 0 {
-		//TODO: do quiesence search
-		return MaterialCount(board)
+		return CountMaterial(board)
 	}
 
 	moves := board.GenerateLegalMoves()
 	if len(moves) == 0 {
 		if board.OurKingInCheck() {
-			return -10001
-		} else {
-			return 0
+			return -9999
 		}
+		return 0
 	}
 
-	var bestmove dragontoothmg.Move
+	bestMove := moves[0]
 	for _, move := range moves {
 		undo := board.Apply(move)
-		score := -search.NegaMax(board,-beta,-alpha,depth -1)
+		score := -NegaMax(board, -beta, -alpha, depth - 1)
 		undo()
 
 		if score > alpha {
 			alpha = score
-			bestmove = move
 			if alpha >= beta {
-				search.Table.Set(board,depth,score,bestmove)
-				return score
+				TTable.Set(board, bestMove, alpha, depth)
+				return alpha
 			}
 		}
-	}
-	search.Table.Set(board,depth,alpha,bestmove)
+	} 
+	TTable.Set(board, bestMove, alpha, depth)
 	return alpha
+}
+
+
+func QuisenceSearch(board *dragontoothmg.Board, alpha, beta int16, depth int8) int16 {
+	
 }
