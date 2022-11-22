@@ -6,6 +6,6 @@ func cstar(){
 	roughness := 20
 
 	for lowerbound <= upperbound + roughness {
-
+		
 	}
 }

@@ -8,17 +8,20 @@ import (
 
 func main(){
 	startpos := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+
+	searcher := engine.NewSearch()
+	
 	var maxDepth int8 = 7
-	fmt.Println(engine.NegaMax(&startpos,-9999,9999,maxDepth))
+	fmt.Println(searcher.NegaMax(&startpos,-9999,9999,maxDepth))
 	
 	i := maxDepth
 	for true {
-		_, contains := engine.DepthCount[i]
+		_, contains := searcher.DepthCount[i]
 		if !contains { break }
-		fmt.Println("DEPTH",maxDepth - i,":",engine.DepthCount[i])
+		fmt.Println("DEPTH",maxDepth - i,":",searcher.DepthCount[i])
 		i--
 	}
-	fmt.Println(engine.TTable.EmptyPercent())
+	fmt.Println(searcher.Table.EmptyPercent())
 }
 
 /* 

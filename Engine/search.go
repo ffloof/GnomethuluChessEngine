@@ -4,16 +4,23 @@ import (
 	"github.com/dylhunn/dragontoothmg"
 )
 
-var DepthCount map[int8]int = map[int8]int{}
+type Searcher struct {
+	Table TranspositionTable
+	DepthCount map[int8]int
+}
 
-var TTable = make(TranspositionTable, 20*1024*1024, 20*1024*1024) //20MB * struct size
-var Misses int
+func NewSearch() *Searcher {
+	return &Searcher {
+		Table: make(TranspositionTable, 20*1024*1024), // 20MB * struct size
+		DepthCount: map[int8]int{},
+	}
+}
 
 //Simplified minmax with ab pruning
-func NegaMax(board *dragontoothmg.Board, alpha, beta int16, depth int8) int16 {
-	DepthCount[depth] += 1
+func (search *Searcher) NegaMax(board *dragontoothmg.Board, alpha, beta int16, depth int8) int16 {
+	search.DepthCount[depth] += 1
 
-	entry := TTable.Get(board)
+	entry := search.Table.Get(board)
 	if entry != nil {
 		if depth <= entry.Depth {
 			return entry.Score
@@ -21,7 +28,7 @@ func NegaMax(board *dragontoothmg.Board, alpha, beta int16, depth int8) int16 {
 	}
 
 	if depth == 0 {
-		return QuiescenceSearch(board, alpha, beta, depth)
+		return search.QuiescenceSearch(board, alpha, beta, depth-1)
 	}
 
 	moves := board.GenerateLegalMoves()
@@ -35,7 +42,7 @@ func NegaMax(board *dragontoothmg.Board, alpha, beta int16, depth int8) int16 {
 	bestMove := moves[0]
 	for _, move := range moves {
 		undo := board.Apply(move)
-		score := -NegaMax(board, -beta, -alpha, depth - 1)
+		score := -search.NegaMax(board, -beta, -alpha, depth - 1)
 		undo()
 
 		if score > alpha {
@@ -46,7 +53,7 @@ func NegaMax(board *dragontoothmg.Board, alpha, beta int16, depth int8) int16 {
 			}
 		}
 	} 
-	TTable.Set(board, bestMove, alpha, depth)
+	search.Table.Set(board, bestMove, alpha, depth)
 	return alpha
 }
 
