@@ -9,6 +9,10 @@ import (
 func main(){
 	startpos := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 
+	//engine.CreateMoveOrder(startpos, 0, false)
+
+	//return
+
 	searcher := engine.NewSearch()
 	
 	var maxDepth int8 = 7

@@ -4,7 +4,7 @@ import (
 	"github.com/dylhunn/dragontoothmg"
 )
 
-type Entry struct {
+type Entry struct { //TODO: should be 13 bytes write test for struct size
 	hash uint64
 	BestMove dragontoothmg.Move
 	Score int16

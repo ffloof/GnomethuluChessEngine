@@ -7,12 +7,14 @@ import (
 type Searcher struct {
 	Table TranspositionTable
 	DepthCount map[int8]int
+	Evaluation func(board *dragontoothmg.Board)int16
 }
 
 func NewSearch() *Searcher {
 	return &Searcher {
 		Table: make(TranspositionTable, 20*1024*1024), // 20MB * struct size
 		DepthCount: map[int8]int{},
+		Evaluation: CountMaterial,
 	}
 }
 
@@ -27,20 +29,33 @@ func (search *Searcher) NegaMax(board *dragontoothmg.Board, alpha, beta int16, d
 		}
 	}
 
-	if depth == 0 {
-		return search.QuiescenceSearch(board, alpha, beta, depth-1)
+	if depth <= 0 {
+		score := CountMaterial(board)
+
+		if score >= alpha {
+			alpha = score
+			if alpha >= beta {
+				return alpha
+			}
+		}
 	}
 
-	moves := board.GenerateLegalMoves()
-	if len(moves) == 0 {
+	order := CreateMoveOrder(board, 0, depth <= 0)
+
+	if order.NoMoves() {
 		if board.OurKingInCheck() {
 			return -9999
 		}
 		return 0
 	}
 
-	bestMove := moves[0]
-	for _, move := range moves {
+	//TODO: implement table moves
+
+	var bestMove dragontoothmg.Move
+	for {
+		move, done := order.GetNextMove()
+		if done { break }
+
 		undo := board.Apply(move)
 		score := -search.NegaMax(board, -beta, -alpha, depth - 1)
 		undo()
@@ -52,9 +67,8 @@ func (search *Searcher) NegaMax(board *dragontoothmg.Board, alpha, beta int16, d
 				break
 			}
 		}
-	} 
+	}
+
 	search.Table.Set(board, bestMove, alpha, depth)
 	return alpha
 }
-
-//TODO: benchmark variations that only search captures, and use checks to make sure invalid scores arent used
