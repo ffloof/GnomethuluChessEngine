@@ -65,7 +65,9 @@ var MVVLVAPriority = [6][7]int {
 
 //TODO: deal with problem where a check is caused in quiescence search, its fine for now but might want to be addressed later
 func getPriority (board *dragontoothmg.Board, move dragontoothmg.Move, tableMove dragontoothmg.Move, inQuiescenceSearch bool) int {
-	if piece := move.Promote(); piece != dragontoothmg.Nothing {
+	if move == tableMove {
+		return 1000
+	} else if piece := move.Promote(); piece != dragontoothmg.Nothing {
 		if piece == dragontoothmg.Queen {
 			return 100
 		} 

@@ -8,21 +8,25 @@ import (
 
 func main(){
 	startpos := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-	fmt.Println(engine.Pesto(&startpos))
 
+	var maxDepth int8
 	searcher := engine.NewSearch()
-	
-	var maxDepth int8 = 6
-	fmt.Println(searcher.NegaMax(&startpos,-9999,9999,maxDepth))
-	
-	i := maxDepth
-	for true {
-		_, contains := searcher.DepthCount[i]
-		if !contains { break }
-		fmt.Println("DEPTH",maxDepth - i,":",searcher.DepthCount[i])
-		i--
+	for maxDepth < 10 {
+		maxDepth++
+
+		
+		fmt.Println("RAW SEARCH DEPTH", maxDepth)
+		fmt.Println(searcher.NegaMax(&startpos,-9999,9999,maxDepth))
+		
+		i := maxDepth
+		for true {
+			_, contains := searcher.DepthCount[i]
+			if !contains { break }
+			fmt.Println("DEPTH",maxDepth - i,":",searcher.DepthCount[i])
+			i--
+		}
+		fmt.Println(searcher.Table.EmptyPercent())
 	}
-	fmt.Println(searcher.Table.EmptyPercent())
 }
 
 /* 

@@ -22,14 +22,17 @@ func NewSearch() *Searcher {
 func (search *Searcher) NegaMax(board *dragontoothmg.Board, alpha, beta int16, depth int8) int16 {
 	search.DepthCount[depth] += 1
 
+	var tableMove dragontoothmg.Move
 	entry := search.Table.Get(board)
 	if entry != nil {
 		if depth <= entry.Depth {
 			return entry.Score
+		} else {
+			tableMove = entry.BestMove
 		}
 	}
 
-	order := CreateMoveOrder(board, 0, depth <= 0)
+	order := CreateMoveOrder(board, tableMove, depth <= 0)
 
 	if order.NoMoves() {
 		if board.OurKingInCheck() {
@@ -48,10 +51,6 @@ func (search *Searcher) NegaMax(board *dragontoothmg.Board, alpha, beta int16, d
 			}
 		}
 	}
-
-	
-
-	//TODO: implement table moves
 
 	var bestMove dragontoothmg.Move
 	for {
