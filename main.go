@@ -9,14 +9,14 @@ import (
 
 //TODO: consider internal iterative deepening
 func main(){
-	startpos := dragontoothmg.ParseFen("r2q1rk1/ppp2ppp/2nb1n2/3p2B1/3P4/2NB4/PPP2PPP/3RNRK1 b - - 0 10")
+	startpos := dragontoothmg.ParseFen("r4rk1/ppp2ppp/2nb3q/3N4/3P2b1/3B1N2/PPP2PPP/R2Q1RK1 w - - 1 11")
 
 	var maxDepth int8
 	searcher := engine.NewSearch()
 	start := time.Now()
 	for {
 		elapsed := time.Since(start)
-		if elapsed.Milliseconds() > 5000 {
+		if elapsed.Milliseconds() > 20000 {
 			result := searcher.Table.Get(&startpos)
 			fmt.Println(result.BestMove.String())
 			break
@@ -25,14 +25,15 @@ func main(){
 		maxDepth++
 
 		fmt.Println("RAW SEARCH DEPTH", maxDepth)
-		//fmt.Println(-searcher.NegaMax(&startpos,-9999,9999,maxDepth))
-		
+		fmt.Println(-searcher.NegaMax(&startpos,-9999,9999,maxDepth))
+
+		/*	
 		for _, move := range startpos.GenerateLegalMoves() {
 			undo := startpos.Apply(move)
 
 			fmt.Println(move.String(), -searcher.NegaMax(&startpos,-15000,15000,maxDepth-1))
 			undo()
-		}
+		}*/ 
 		
 		searcher.PrintDepths(maxDepth)
 	}

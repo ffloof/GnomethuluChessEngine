@@ -1,7 +1,6 @@
 package engine
 
 import (
-    "fmt"
 	"github.com/dylhunn/dragontoothmg"
 )
 
@@ -204,7 +203,6 @@ func Pesto(board *dragontoothmg.Board) int16 {
 		}
 	}	
 
-    fmt.Println("early",earlyScore, "late",lateScore, "phase",phase)
 	eval = ((earlyScore * (phase)) + (lateScore * (24 - phase)))/24
 
 	if !board.Wtomove {
