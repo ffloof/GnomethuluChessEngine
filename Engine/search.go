@@ -29,8 +29,17 @@ func (search *Searcher) NegaMax(board *dragontoothmg.Board, alpha, beta int16, d
 		}
 	}
 
+	order := CreateMoveOrder(board, 0, depth <= 0)
+
+	if order.NoMoves() {
+		if board.OurKingInCheck() {
+			return -9999
+		}
+		return 0
+	}
+
 	if depth <= 0 {
-		score := CountMaterial(board)
+		score := search.Evaluation(board)
 
 		if score >= alpha {
 			alpha = score
@@ -40,14 +49,7 @@ func (search *Searcher) NegaMax(board *dragontoothmg.Board, alpha, beta int16, d
 		}
 	}
 
-	order := CreateMoveOrder(board, 0, depth <= 0)
-
-	if order.NoMoves() {
-		if board.OurKingInCheck() {
-			return -9999
-		}
-		return 0
-	}
+	
 
 	//TODO: implement table moves
 

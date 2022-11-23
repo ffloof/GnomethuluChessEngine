@@ -8,14 +8,11 @@ import (
 
 func main(){
 	startpos := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-
-	//engine.CreateMoveOrder(startpos, 0, false)
-
-	//return
+	fmt.Println(engine.Pesto(&startpos))
 
 	searcher := engine.NewSearch()
 	
-	var maxDepth int8 = 7
+	var maxDepth int8 = 6
 	fmt.Println(searcher.NegaMax(&startpos,-9999,9999,maxDepth))
 	
 	i := maxDepth
@@ -165,4 +162,56 @@ DEPTH 31 : 2
 DEPTH 32 : 3                                                                                                                                          
 DEPTH 33 : 1                                                                                                                                          
 DEPTH 34 : 1
+*/
+
+/* Before move ordering middlegame position r2qkb1r/ppp1n1pp/2n2p2/1B1ppb2/3P4/1P2PN2/PBP2PPP/RN1Q1RK1 b kq - 0 7
+DEPTH 0 : 1                                                                                                                                                                  
+DEPTH 1 : 30                                                                                                                                                                 
+DEPTH 2 : 169                                                                                                                                                                
+DEPTH 3 : 2423                                                                                                                                                               
+DEPTH 4 : 1595                                                                                                                                                               
+DEPTH 5 : 1993                                                                                                                                                               
+DEPTH 6 : 3329                                                                                                                                                               
+DEPTH 7 : 3945                                                                                                                                                               
+DEPTH 8 : 8464                                                                                                                                                               
+DEPTH 9 : 8066                                                                                                                                                               
+DEPTH 10 : 16602                                                                                                                                                             
+DEPTH 11 : 10986                                                                                                                                                             
+DEPTH 12 : 19312                                                                                                                                                             
+DEPTH 13 : 11225                                                                                                                                                             
+DEPTH 14 : 16887                                                                                                                                                             
+DEPTH 15 : 10837                                                                                                                                                             
+DEPTH 16 : 14041                                                                                                                                                             
+DEPTH 17 : 9173                                                                                                                                                              
+DEPTH 18 : 10272                                                                                                                                                             
+DEPTH 19 : 6386                                                                                                                                                              
+DEPTH 20 : 5744                                                                                                                                                              
+DEPTH 21 : 3359                                                                                                                                                              
+DEPTH 22 : 2690                                                                                                                                                              
+DEPTH 23 : 1517                                                                                                                                                              
+DEPTH 24 : 1025                                                                                                                                                              
+DEPTH 25 : 462                                                                                                                                                               
+DEPTH 26 : 235                                                                                                                                                               
+DEPTH 27 : 55                                                                                                                                                                
+DEPTH 28 : 21                                                                                                                                                                
+DEPTH 29 : 1
+
+
+After promotes, mmv_lva, other move ordering                                                                                                                                                                        
+DEPTH 0 : 1                                                                                                                                                                  
+DEPTH 1 : 30                                                                                                                                                                 
+DEPTH 2 : 82                                                                                                                                                                 
+DEPTH 3 : 479                                                                                                                                                                
+DEPTH 4 : 278                                                                                                                                                                
+DEPTH 5 : 192                                                                                                                                                                
+DEPTH 6 : 272                                                                                                                                                                
+DEPTH 7 : 220                                                                                                                                                                
+DEPTH 8 : 172                                                                                                                                                                
+DEPTH 9 : 138                                                                                                                                                                
+DEPTH 10 : 123                                                                                                                                                               
+DEPTH 11 : 113                                                                                                                                                               
+DEPTH 12 : 45                                                                                                                                                                
+DEPTH 13 : 14                                                                                                                                                                
+DEPTH 14 : 3                                                                                                                                                                 
+DEPTH 15 : 1                                                                                                                                                                 
 */
