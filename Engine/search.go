@@ -14,7 +14,7 @@ func NewSearch() *Searcher {
 	return &Searcher {
 		Table: make(TranspositionTable, 20*1024*1024), // 20MB * struct size
 		DepthCount: map[int8]int{},
-		Evaluation: CountMaterial,
+		Evaluation: Pesto,
 	}
 }
 

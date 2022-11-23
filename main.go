@@ -1,31 +1,40 @@
 package main
 
 import (
+	"time"
 	"fmt"
 	"gnomethulu/engine"
 	"github.com/dylhunn/dragontoothmg"
 )
 
+//TODO: consider internal iterative deepening
 func main(){
-	startpos := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+	startpos := dragontoothmg.ParseFen("r2q1rk1/ppp2ppp/2nb1n2/3p2B1/3P4/2NB4/PPP2PPP/3RNRK1 b - - 0 10")
 
 	var maxDepth int8
 	searcher := engine.NewSearch()
-	for maxDepth < 10 {
+	start := time.Now()
+	for {
+		elapsed := time.Since(start)
+		if elapsed.Milliseconds() > 5000 {
+			result := searcher.Table.Get(&startpos)
+			fmt.Println(result.BestMove.String())
+			break
+		}
+
 		maxDepth++
 
-		
 		fmt.Println("RAW SEARCH DEPTH", maxDepth)
-		fmt.Println(searcher.NegaMax(&startpos,-9999,9999,maxDepth))
+		//fmt.Println(-searcher.NegaMax(&startpos,-9999,9999,maxDepth))
 		
-		i := maxDepth
-		for true {
-			_, contains := searcher.DepthCount[i]
-			if !contains { break }
-			fmt.Println("DEPTH",maxDepth - i,":",searcher.DepthCount[i])
-			i--
+		for _, move := range startpos.GenerateLegalMoves() {
+			undo := startpos.Apply(move)
+
+			fmt.Println(move.String(), -searcher.NegaMax(&startpos,-15000,15000,maxDepth-1))
+			undo()
 		}
-		fmt.Println(searcher.Table.EmptyPercent())
+		
+		searcher.PrintDepths(maxDepth)
 	}
 }
 
