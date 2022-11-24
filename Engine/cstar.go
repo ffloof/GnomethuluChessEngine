@@ -21,10 +21,11 @@ func Cstar(board dragontoothmg.Board){
 		var roughness int16 = 10
 
 		for lowerbound <= upperbound - roughness {
-			fmt.Println(depth)
 
 			gamma := (lowerbound + upperbound + 1)/2
-			score := searcher.NegaMax(&board, gamma, gamma+1, depth)
+			score := searcher.NegaMax(&board, gamma-1, gamma, depth)
+			fmt.Println(depth, gamma, score)
+
 			if score >= gamma {
 				lowerbound = score
 			}
@@ -33,9 +34,8 @@ func Cstar(board dragontoothmg.Board){
 			}
 		}
 		
-		roughScore = (lowerbound + upperbound) / 2
-
 		if time.Since(start).Milliseconds() > MINTIME {
+			roughScore = (lowerbound + upperbound) / 2
 			break
 		}
 		depth++

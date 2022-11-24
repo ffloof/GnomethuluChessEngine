@@ -24,8 +24,11 @@ func (table TranspositionTable) Get(board *dragontoothmg.Board) *Entry {
 }
 
 func (table TranspositionTable) Set(board *dragontoothmg.Board, bestMove dragontoothmg.Move, score int16, depth int8) {
-	//TODO: think about behavior in case of collision
-	table[board.Hash() % uint64(len(table))] = Entry{board.Hash(), bestMove, score, depth}
+	//TODO: is this the best collision behavior
+	entry := &table[board.Hash() % uint64(len(table))]
+	if entry.hash == 0 || depth >= entry.Depth {
+		table[board.Hash() % uint64(len(table))] = Entry{board.Hash(), bestMove, score, depth}
+	}
 }
 
 func (table TranspositionTable) EmptyPercent() float64 {

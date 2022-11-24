@@ -8,9 +8,11 @@ import (
 //TODO: consider internal iterative deepening
 func main(){
 	startpos := dragontoothmg.ParseFen("r4rk1/ppp2ppp/2nb3q/3N4/3P2b1/3B1N2/PPP2PPP/R2Q1RK1 w - - 1 11")
+	//searcher := engine.NewSearch()
+	//fmt.Println(searcher.NegaMax(&startpos, -4, -3, 4))
 
 	engine.Cstar(startpos)
-	engine.Base(startpos)
+	//engine.Base(startpos)
 }
 
 /* 
