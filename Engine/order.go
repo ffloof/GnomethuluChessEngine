@@ -27,7 +27,15 @@ func CreateMoveOrder(board *dragontoothmg.Board, tableMove dragontoothmg.Move, i
 }
 
 func (order *moveOrder) NoMoves() bool {
-	return len(order.moves) == 0
+	if len(order.moves) != 0 {
+		for _, value := range order.priority {
+			if value >= 0 {
+				return false
+			}
+		}
+	}
+
+	return true
 }
 
 func (order *moveOrder) GetNextMove() (dragontoothmg.Move,bool) {

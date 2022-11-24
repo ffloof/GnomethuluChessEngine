@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-	"fmt"
 	"gnomethulu/engine"
 	"github.com/dylhunn/dragontoothmg"
 )
@@ -11,32 +9,8 @@ import (
 func main(){
 	startpos := dragontoothmg.ParseFen("r4rk1/ppp2ppp/2nb3q/3N4/3P2b1/3B1N2/PPP2PPP/R2Q1RK1 w - - 1 11")
 
-	var maxDepth int8
-	searcher := engine.NewSearch()
-	start := time.Now()
-	for {
-		elapsed := time.Since(start)
-		if elapsed.Milliseconds() > 20000 {
-			result := searcher.Table.Get(&startpos)
-			fmt.Println(result.BestMove.String())
-			break
-		}
-
-		maxDepth++
-
-		fmt.Println("RAW SEARCH DEPTH", maxDepth)
-		fmt.Println(-searcher.NegaMax(&startpos,-9999,9999,maxDepth))
-
-		/*	
-		for _, move := range startpos.GenerateLegalMoves() {
-			undo := startpos.Apply(move)
-
-			fmt.Println(move.String(), -searcher.NegaMax(&startpos,-15000,15000,maxDepth-1))
-			undo()
-		}*/ 
-		
-		searcher.PrintDepths(maxDepth)
-	}
+	engine.Cstar(startpos)
+	engine.Base(startpos)
 }
 
 /* 

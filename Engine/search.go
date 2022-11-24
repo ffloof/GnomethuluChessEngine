@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"github.com/dylhunn/dragontoothmg"
 )
 
@@ -36,7 +37,7 @@ func (search *Searcher) NegaMax(board *dragontoothmg.Board, alpha, beta int16, d
 
 	if order.NoMoves() {
 		if board.OurKingInCheck() {
-			return -9999
+			return -10000
 		}
 		return 0
 	}
@@ -44,6 +45,7 @@ func (search *Searcher) NegaMax(board *dragontoothmg.Board, alpha, beta int16, d
 	if depth <= 0 {
 		score := search.Evaluation(board)
 
+		//TODO: make sure this doesn't cause a null move to end up in the transposition table
 		if score >= alpha {
 			alpha = score
 			if alpha >= beta {
@@ -68,6 +70,11 @@ func (search *Searcher) NegaMax(board *dragontoothmg.Board, alpha, beta int16, d
 				break
 			}
 		}
+	}
+
+	if bestMove == 0 {
+		fmt.Println(board.ToFen(),alpha, beta, depth)
+		panic("")
 	}
 
 	search.Table.Set(board, bestMove, alpha, depth)
