@@ -8,6 +8,7 @@ import (
 
 var MINTIME int64 = 3000
 
+/* CSTAR cant really work efficiently or accurately unless we fix the transposition table for null windows
 func Cstar(board dragontoothmg.Board){
 	searcher := NewSearch()
 	start := time.Now()
@@ -18,13 +19,12 @@ func Cstar(board dragontoothmg.Board){
 	for depth < 100 {
 		var lowerbound int16 = -9999
 		var upperbound int16 = 9999
-		var roughness int16 = 10
+		var roughness int16 = 2
 
 		for lowerbound <= upperbound - roughness {
 
 			gamma := (lowerbound + upperbound + 1)/2
 			score := searcher.NegaMax(&board, gamma-1, gamma, depth)
-			fmt.Println(depth, gamma, score)
 
 			if score >= gamma {
 				lowerbound = score
@@ -36,13 +36,14 @@ func Cstar(board dragontoothmg.Board){
 		
 		if time.Since(start).Milliseconds() > MINTIME {
 			roughScore = (lowerbound + upperbound) / 2
+			searcher.NegaMax(&board, lowerbound-1, lowerbound, depth)
 			break
 		}
 		depth++
 	}
 
 	fmt.Println("CSTAR", searcher.Table.Get(&board).BestMove.String(), roughScore, depth)
-}
+}*/
 
 func Base(board dragontoothmg.Board){
 	searcher := NewSearch()

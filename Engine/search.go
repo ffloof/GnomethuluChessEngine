@@ -45,18 +45,15 @@ func (search *Searcher) NegaMax(board *dragontoothmg.Board, alpha, beta int16, d
 
 	if depth <= 0 {
 		score := search.Evaluation(board)
-
-		//TODO: make sure this doesn't cause a null move to end up in the transposition table
 		if score >= alpha {
 			alpha = score
 			if alpha >= beta {
 				return alpha
 			}
-			//bestMove = -1
 		}
 	}
 
-	
+	var bestScore int16 = -10000
 	for {
 		move, done := order.GetNextMove()
 		if done { break }
@@ -65,11 +62,15 @@ func (search *Searcher) NegaMax(board *dragontoothmg.Board, alpha, beta int16, d
 		score := -search.NegaMax(board, -beta, -alpha, depth - 1)
 		undo()
 
-		if score > alpha {
-			alpha = score
-			bestMove = move
-			if alpha >= beta {
-				break
+
+		if score > bestScore {
+			bestScore = score
+			if score > alpha {
+				bestMove = move
+				alpha = score
+				if alpha >= beta {
+					break
+				}
 			}
 		}
 	}

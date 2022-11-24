@@ -40,3 +40,6 @@ func (table TranspositionTable) EmptyPercent() float64 {
 	}
 	return float64(emptyCount) / float64(len(table))
 }
+
+//TODO: store bound and type of bound for all nodes, this lets us cut more efficiently
+//TODO: add two bucket system
