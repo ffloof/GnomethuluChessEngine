@@ -7,10 +7,11 @@ import (
 
 //TODO: consider internal iterative deepening
 func main(){
-	startpos := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+	startpos := dragontoothmg.ParseFen("r4rk1/ppp2ppp/2nb3q/3N4/3P2b1/3B1N2/PPP2PPP/R2Q1RK1 w - - 1 11")
 
+	engine.VerifyBase(startpos)
 	//engine.Cstar(startpos)
-	engine.Base(startpos)
+	//engine.Base(startpos)
 }
 
 /* 

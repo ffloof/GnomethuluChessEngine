@@ -203,7 +203,7 @@ func Pesto(board *dragontoothmg.Board) int16 {
 		}
 	}	
 
-	eval = ((earlyScore * (phase)) + (lateScore * (24 - phase)))/24
+	eval = ((earlyScore * phase) + (lateScore * (24 - phase)))/24
 
 	if !board.Wtomove {
 		eval = -eval
