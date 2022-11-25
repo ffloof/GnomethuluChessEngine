@@ -14,6 +14,31 @@ func inverseSigmoid(n float64) float64 {
 	return -math.Log(((2 *SigmoidScale)/(n+SigmoidScale))-1)/SigmoidCurve
 }
 
+func (mcts MonteCarloTreeSearcher) PrintSearchIdeas() {
+	moveMap := map[dragontoothmg.Move]float64{}
+	for i, move := range mcts.Head.Moves {
+		moveMap[move] = mcts.Head.Children[i].Value / mcts.Head.Children[i].Visits
+	}
+
+	keys := make([]dragontoothmg.Move, 0, len(moveMap))
+	for k := range moveMap {
+		keys = append(keys, k)
+	}
+
+	sort.SliceStable(keys, func(i, j int) bool {
+		return moveMap[keys[i]] > moveMap[keys[j]]
+	})
+
+	for i, key := range keys {
+		if i + 1 > 3{
+			break
+		}
+		move := key.String()
+		eval := moveMap[key]
+		fmt.Println("info nodes", int(mcts.Head.Visits) ,"multipv", i+1 ,"score cp", int(inverseSigmoid(eval) * 100), "pv", move)
+	}
+}
+
 
 
 func (mcts *MonteCarloTreeSearcher) SetPosition(nextState dragontoothmg.Board){
@@ -58,44 +83,20 @@ func (mcts MonteCarloTreeSearcher) RunInfinite(stop chan bool) {
 			return
 		}
 
-		
-		moveMap := map[dragontoothmg.Move]float64{}
-		for i, move := range mcts.Head.Moves {
-			moveMap[move] = mcts.Head.Children[i].Value / mcts.Head.Children[i].Visits
-		}
-
-		keys := make([]dragontoothmg.Move, 0, len(moveMap))
-		for k := range moveMap {
-			keys = append(keys, k)
-		}
-
-		sort.SliceStable(keys, func(i, j int) bool {
-			return moveMap[keys[i]] > moveMap[keys[j]]
-		})
-
-		for i, key := range keys {
-			if i + 1 > 3{
-				break
-			}
-			move := key.String()
-			eval := moveMap[key]
-			fmt.Println("info nodes", mcts.Head.Visits ,"multipv", i+1 ,"score cp", int(inverseSigmoid(eval) * 100), "pv", move)
-		}		
+		mcts.PrintSearchIdeas()		
 	}
 }
 
-func (mcts MonteCarloTreeSearcher) RunTime(seconds float64) int {
+func (mcts MonteCarloTreeSearcher) RunTime(seconds float64) {
 	start := time.Now()
-	count := 0
 	for true {
-		mcts.RunIterations(1000)
-		count += 1000
+		mcts.RunIterations(10000)
+		mcts.PrintSearchIdeas()
 		elapsed := time.Since(start)
 		if float64(elapsed.Milliseconds()) / 1000 > seconds  {
 			break
 		}
 	}
-	return count
 }
 
 type MonteCarloTreeSearcher struct {
