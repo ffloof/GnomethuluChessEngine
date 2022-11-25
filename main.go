@@ -7,7 +7,6 @@ import (
 	"gnomethulu/mcts"
 	"gnomethulu/uci"
 	"github.com/dylhunn/dragontoothmg"
-	"math"
 )
 
 func main() {	
@@ -20,11 +19,11 @@ func main() {
 	explore := searcher.Head
 	for i, child := range explore.Children {
 		average := child.Value/child.Visits
-		fmt.Println(i, explore.Moves[i].String(), child.Visits, "mean", average, "variance", average + math.Sqrt(child.Variance/child.Visits)/average)
+		fmt.Println(i, explore.Moves[i].String(), child.Visits, "mean", average)
 	}
 	best := searcher.GetBestMove()
 	fmt.Println(best.String())
 	
-	uci.Init(policy.UCT, evaluation.PestoQuiescence)
+	uci.Init(policy.UCT, evaluation.Pesto)
 }
 

@@ -56,8 +56,6 @@ selectionLoop:
 	for node != nil {
 		evaluation = -evaluation
 		node.Visits++
-		variance := (evaluation - node.Value)/node.Visits
-		node.Variance += variance * variance
 		node.Value += evaluation
 		node = node.Parent
 	}
@@ -72,9 +70,6 @@ func newNode(parent *MonteCarloNode, board dragontoothmg.Board) *MonteCarloNode 
 		Parent:   parent,
 		Children: children,
 		Moves:    moves,
-		Value:    0.0,
-		Variance: 0.0,
-		Visits:   0.0,
 	}
 }
 
@@ -83,7 +78,6 @@ type MonteCarloNode struct {
 	Children []*MonteCarloNode
 	Moves    []dragontoothmg.Move
 	Value    float64 //Represents the utility of choosing this node among its sibblings
-	Variance float64
 	Visits   float64
 }
 
