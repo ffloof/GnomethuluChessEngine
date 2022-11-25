@@ -41,7 +41,6 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 			case "uci":
 				fmt.Println("id name Gnomethulu")
 				fmt.Println("id author ffloof")
-				//TODO: add options here
 				fmt.Println("uciok")
 			case "isready":
 				fmt.Println("readyok")
@@ -92,13 +91,11 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 							fmt.Println("bestmove", move.String())
 						}
 					} else {
-						// TODO:  Use time controls
 						searcher.RunTime(10.0)
 						move := searcher.GetBestMove()
 						fmt.Println("bestmove", move.String())
 					}
 				}
-				//TODO: make better use of channels
 			case "stop":
 				stop <- true
 				move := searcher.GetBestMove()

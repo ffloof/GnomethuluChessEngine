@@ -149,7 +149,6 @@ var egKingTable [64]int = reverse(0,[64]int{
 	-53, -34, -21, -11, -28, -14, -24, -43,
 })
 
-//TODO: convert stuff in eval to int operations, with cast to float at end and compare speed
 func Pesto(board dragontoothmg.Board) float64 {
 	phase := 0
 	midScore := 0
