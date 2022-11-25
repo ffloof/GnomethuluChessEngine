@@ -6,7 +6,7 @@ import (
 	"math"
 )
 
-var PolicyExplore float64 = 2.0
+var PolicyExplore float64 = 15.0
 
 func UCT(parent, child *mcts.MonteCarloNode, parentBoard dragontoothmg.Board, move dragontoothmg.Move) float64 {
 	c := PolicyExplore
