@@ -85,16 +85,35 @@ func (mcts MonteCarloTreeSearcher) RunTime(seconds float64, stopSignal chan bool
 }
 
 func (mcts MonteCarloTreeSearcher) TimeManager(bank float64, increment float64, stopSignal chan bool) {
+	// Only one move can be played
+	if len(mcts.Head.Moves) == 1 {
+		fmt.Println("bestmove", mcts.Head.Moves[0].String())
+		return
+	}
+
+	// Mate in one detection
+	for _, move := range mcts.Head.Moves {
+		board := mcts.startPos
+		moves := board.GenerateLegalMoves()
+		if len(moves) == 0 {
+			if board.OurKingInCheck() {
+				fmt.Println("bestmove", move.String())
+			}
+		}
+	}
+
 	/*
 	Time manager setup
 
 	Run for at least the increment then decide what to do next
-	Otherwise it will use xln(x)/100
+	Otherwise it will use xln(x)/c
 	*/
+
 	defer func(){
 		move := mcts.GetBestMove()
 		fmt.Println("bestmove", move.String())
 	}()
+	
 
 	if increment != 0.0 { 
 		if mcts.RunTime(increment, stopSignal) { return } 
