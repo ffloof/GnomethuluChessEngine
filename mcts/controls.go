@@ -43,23 +43,20 @@ func (mcts MonteCarloTreeSearcher) PrintSearchIdeas() {
 
 func (mcts *MonteCarloTreeSearcher) SetPosition(nextState dragontoothmg.Board){
 	for i, move := range mcts.Head.Moves {
-		testBoard := mcts.BaseState
+		testBoard := mcts.startPos
 		testBoard.Apply(move)
 		if nextState == testBoard && mcts.Head.Children[i] != nil {
 			// Can use information from pondering / previous move analysis
-			mcts.BaseState = nextState
+			mcts.startPos = nextState
 			mcts.Head = mcts.Head.Children[i]
 			mcts.Head.Parent = nil
 			return
 		}
 	}
 
-	mcts.BaseState = nextState
-	mcts.Head = newNode(nil, mcts.BaseState)
+	mcts.startPos = nextState
+	mcts.Head = newNode(nil, mcts.startPos)
 }
-
-
-
 
 
 func (mcts MonteCarloTreeSearcher) RunIterations(n int) {
@@ -68,42 +65,56 @@ func (mcts MonteCarloTreeSearcher) RunIterations(n int) {
 	}
 }
 
-var hard_breakpoint int = 1000000
-
-func (mcts MonteCarloTreeSearcher) RunInfinite(stop chan bool) {
-	for true {
-		if len(stop) != 0{
-			return
-		}
-		mcts.RunIterations(10000)
-
-		if int(mcts.Head.Visits) > hard_breakpoint {
-			leave := <- stop
-			leave = leave
-			return
-		}
-
-		mcts.PrintSearchIdeas()		
-	}
-}
-
-func (mcts MonteCarloTreeSearcher) RunTime(seconds float64) {
+func (mcts MonteCarloTreeSearcher) RunTime(seconds float64, stopSignal chan bool) bool {
 	start := time.Now()
 	for true {
 		mcts.RunIterations(10000)
 		mcts.PrintSearchIdeas()
 		elapsed := time.Since(start)
+		
+		if len(stopSignal) != 0 {
+			return true
+		}
+
 		if float64(elapsed.Milliseconds()) / 1000 > seconds  {
 			break
 		}
+		
+	}
+	return false
+}
+
+func (mcts MonteCarloTreeSearcher) TimeManager(bank float64, increment float64, stopSignal chan bool) {
+	/*
+	Time manager setup
+
+	Run for at least the increment then decide what to do next
+	Otherwise it will use xln(x)/100
+	*/
+	defer func(){
+		move := mcts.GetBestMove()
+		fmt.Println("bestmove", move.String())
+	}()
+
+	if increment != 0.0 { 
+		if mcts.RunTime(increment, stopSignal) { return } 
+	}
+	if bank != 0.0 { 
+		if mcts.RunTime(bank*math.Log(bank)/200, stopSignal) { return }
 	}
 }
 
+
+
 type MonteCarloTreeSearcher struct {
-	BaseState dragontoothmg.Board
+	startPos dragontoothmg.Board
 	Head      *MonteCarloNode
 	treeFunc  func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64
 	evalFunc  func(dragontoothmg.Board) float64
+}
+
+func (mcts MonteCarloTreeSearcher) PlayingWhite() bool {
+	return mcts.startPos.Wtomove
 }
 
 func (mcts MonteCarloTreeSearcher) GetBestMove() dragontoothmg.Move {

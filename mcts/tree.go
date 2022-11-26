@@ -8,7 +8,7 @@ func (mcts MonteCarloTreeSearcher) iteration() {
 	evaluation := 0.0
 
 	// 1. Selection
-	board := mcts.BaseState
+	board := mcts.startPos
 	node := mcts.Head
 
 selectionLoop:
@@ -77,14 +77,14 @@ type MonteCarloNode struct {
 	Parent   *MonteCarloNode
 	Children []*MonteCarloNode
 	Moves    []dragontoothmg.Move
-	Value    float64 //Represents the utility of choosing this node among its sibblings
+	Value    float64
 	Visits   float64
 }
 
 func NewSearch(tree func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64, eval func(dragontoothmg.Board) float64) MonteCarloTreeSearcher {
 	board := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 	mcts := MonteCarloTreeSearcher{
-		BaseState: board,
+		startPos: board,
 		Head:      newNode(nil, board),
 		treeFunc:  tree,
 		evalFunc:  eval,

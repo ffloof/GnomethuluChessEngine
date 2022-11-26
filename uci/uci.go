@@ -14,7 +14,7 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 	reader := bufio.NewReader(os.Stdin)
 
 	searcher := mcts.NewSearch(treeFunc, evalFunc)
-	stop := make(chan bool, 1)
+	stop := make(chan bool, 2)
 
 	f, _ := os.Create("./input_log.txt")
  	w := bufio.NewWriter(f)
@@ -26,15 +26,8 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 		line = strings.TrimSpace(line)
 		//TODO: we should make all white space a single space character to simplify edge cases
 
-		command := ""
-		arguments := ""
-		i := strings.Index(line, " ")
-		if i == -1 {
-			command = line
-		} else {
-			command = line[0:i]
-			arguments = line[i+1:]
-		}
+		command := getFirstWord(line)
+		arguments := getStringAfter(line, " ")
 
 		arguments = arguments
 		switch (command) {
@@ -48,14 +41,15 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 				return
 			case "ucinewgame":
 				searcher = mcts.NewSearch(treeFunc, evalFunc)
-				searcher = searcher
 			case "position":
-				fenString := strings.TrimSpace(GetStringBefore(arguments, "moves"))
+				//first word wont work cause fen contains spaces
+				
+				fenString := getStringBefore(arguments, "moves")				
 				if fenString == "" {
 					fenString = "startpos"
 				}
 
-				moveStrings := strings.Split(strings.TrimSpace(GetStringAfter(arguments, "moves")), " ")
+				moveStrings := strings.Split(strings.TrimSpace(getStringAfter(arguments, "moves")), " ")
 				
 				var board dragontoothmg.Board
 				if fenString != "startpos" {
@@ -73,49 +67,69 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 					}
 				}
 				searcher.SetPosition(board)
-
 			case "go":
-				if strings.Contains(arguments, "infinite") {
-					stop = make(chan bool)
-					go searcher.RunInfinite(stop)
+				base := 0.0
+				increment := 0.0
+				if getFirstWord(arguments) == "infinite" {
+					increment = 1000
+				} else if getStringAfter(arguments, "movetime") != "" {
+					increment = convertFloat(getFirstWord(getStringAfter(arguments, "movetime")))
 				} else {
-					timethinker := GetStringAfter(arguments,"movetime")
-					if timethinker != "" {
-						moves := searcher.BaseState.GenerateLegalMoves()
-						if len(moves) == 0 {
-							fmt.Println("bestmove", moves[0].String())
-						} else {
-							i, _ := strconv.Atoi(strings.TrimSpace(timethinker))
-							searcher.RunTime(float64(i)/1000)
-							move := searcher.GetBestMove()
-							fmt.Println("bestmove", move.String())
-						}
+					if searcher.PlayingWhite() {
+						base = convertFloat(getFirstWord(getStringAfter(arguments, "wtime")))
+						increment = convertFloat(getFirstWord(getStringAfter(arguments, "winc")))
 					} else {
-						searcher.RunTime(10.0)
-						move := searcher.GetBestMove()
-						fmt.Println("bestmove", move.String())
+						base = convertFloat(getFirstWord(getStringAfter(arguments, "btime")))
+						increment = convertFloat(getFirstWord(getStringAfter(arguments, "binc")))
 					}
 				}
+
+				base /= 1000
+				increment /= 1000
+
+				fmt.Println(base, increment)
+
+
+				stop <- true
+				stop = make(chan bool, 2)
+				go searcher.TimeManager(base, increment, stop)
+				
 			case "stop":
 				stop <- true
-				move := searcher.GetBestMove()
-				fmt.Println("bestmove", move.String())	
 		}
 	}
 }
 
-func GetStringBefore(str string, end string) string {
-	e := strings.Index(str, end)
-	if e == -1 {
+func getStringAfter(str string, find string) string {
+	start := strings.Index(str, find)
+	if start == -1 {
 		return ""
 	}
-	return strings.TrimSpace(str[:e])
+	return strings.TrimSpace(str[start + len(find):])
 }
 
-func GetStringAfter(str string, start string) string {
-	s := strings.Index(str, start)
-	if s == -1 {
-		return ""
+func getStringBefore(str string, find string) string {
+	end := strings.Index(str, find)
+	if end == -1 {
+		end = len(str)
 	}
-	return strings.TrimSpace(str[s+len(start):])
+	return strings.TrimSpace(str[:end])
+}
+
+func getFirstWord(str string) string {
+	end := strings.Index(str, " ")
+	if end == -1 {
+		end = len(str)
+	}
+	return strings.TrimSpace(str[:end])
+}
+
+func convertFloat(str string) float64 {
+	str = strings.TrimSpace(str)
+	number, err := strconv.Atoi(str)
+	if err != nil {
+		return 0.0
+	} else {
+		return float64(number)
+	}
 }
