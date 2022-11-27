@@ -11,7 +11,7 @@ import (
 func inverseSigmoid(n float64) float64 {
 	SigmoidScale := 0.9
 	SigmoidCurve := 0.25
-	return -math.Log(((2 *SigmoidScale)/(n+SigmoidScale))-1)/SigmoidCurve
+	return -100 * math.Log(((2 *SigmoidScale)/(n+SigmoidScale))-1)/SigmoidCurve
 }
 
 func (mcts *MonteCarloTreeSearcher) PrintInfo() {
@@ -35,7 +35,7 @@ func (mcts *MonteCarloTreeSearcher) PrintInfo() {
 		}
 		move := key.String()
 		eval := moveMap[key]
-		fmt.Println("info nodes", int(mcts.Head.Visits) ,"multipv", i+1 ,"score cp", int(inverseSigmoid(eval) * 100), "pv", move)
+		fmt.Println("info nodes", int(mcts.Head.Visits) ,"multipv", i+1 ,"score cp", int(inverseSigmoid(eval)), "pv", move)
 	}
 }
 
