@@ -1,10 +1,10 @@
-package mcts
+package search
 
 import (
 	"github.com/dylhunn/dragontoothmg"
 )
 
-func (mcts MonteCarloTreeSearcher) iteration() {
+func (mcts *MonteCarloTreeSearcher) iteration() {
 	evaluation := 0.0
 
 	// 1. Selection
@@ -82,12 +82,19 @@ type MonteCarloNode struct {
 }
 
 func NewSearch(tree func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64, eval func(dragontoothmg.Board) float64) MonteCarloTreeSearcher {
+	defaultSettings := map[string]int{
+		"multipv": 3,
+		"maxnodes": 2000000,
+	}
+
 	board := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+
 	mcts := MonteCarloTreeSearcher{
 		startPos: board,
-		Head:      newNode(nil, board),
-		treeFunc:  tree,
-		evalFunc:  eval,
+		Head:     newNode(nil, board),
+		treeFunc: tree,
+		evalFunc: eval,
+		settings: defaultSettings,
 	}
 	return mcts
 }

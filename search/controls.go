@@ -1,4 +1,4 @@
-package mcts
+package search
 
 import (
 	"github.com/dylhunn/dragontoothmg"
@@ -14,7 +14,7 @@ func inverseSigmoid(n float64) float64 {
 	return -math.Log(((2 *SigmoidScale)/(n+SigmoidScale))-1)/SigmoidCurve
 }
 
-func (mcts MonteCarloTreeSearcher) PrintSearchIdeas() {
+func (mcts *MonteCarloTreeSearcher) PrintInfo() {
 	moveMap := map[dragontoothmg.Move]float64{}
 	for i, move := range mcts.Head.Moves {
 		moveMap[move] = mcts.Head.Children[i].Value / mcts.Head.Children[i].Visits
@@ -30,7 +30,7 @@ func (mcts MonteCarloTreeSearcher) PrintSearchIdeas() {
 	})
 
 	for i, key := range keys {
-		if i + 1 > 3{
+		if i + 1 > mcts.settings["multipv"] {
 			break
 		}
 		move := key.String()
@@ -59,20 +59,20 @@ func (mcts *MonteCarloTreeSearcher) SetPosition(nextState dragontoothmg.Board){
 }
 
 
-func (mcts MonteCarloTreeSearcher) RunIterations(n int) {
+func (mcts *MonteCarloTreeSearcher) RunIterations(n int) {
 	for i := 0; i < n; i++ {
 		mcts.iteration()
 	}
 }
 
-func (mcts MonteCarloTreeSearcher) RunTime(seconds float64, stopSignal chan bool) bool {
+func (mcts *MonteCarloTreeSearcher) runTime(seconds float64, stopSignal chan bool) bool {
 	start := time.Now()
 	for true {
 		mcts.RunIterations(10000)
-		mcts.PrintSearchIdeas()
+		mcts.PrintInfo()
 		elapsed := time.Since(start)
 		
-		if len(stopSignal) != 0 {
+		if len(stopSignal) != 0 || mcts.settings["maxnodes"] < int(mcts.Head.Visits) {
 			return true
 		}
 
@@ -84,7 +84,7 @@ func (mcts MonteCarloTreeSearcher) RunTime(seconds float64, stopSignal chan bool
 	return false
 }
 
-func (mcts MonteCarloTreeSearcher) TimeManager(bank float64, increment float64, stopSignal chan bool) {
+func (mcts *MonteCarloTreeSearcher) TimeManager(bank float64, increment float64, stopSignal chan bool) {
 	// Only one move can be played
 	if len(mcts.Head.Moves) == 1 {
 		fmt.Println("bestmove", mcts.Head.Moves[0].String())
@@ -105,8 +105,7 @@ func (mcts MonteCarloTreeSearcher) TimeManager(bank float64, increment float64, 
 	/*
 	Time manager setup
 
-	Run for at least the increment then decide what to do next
-	Otherwise it will use xln(x)/c
+	Run for at least the increment then run for xln(x)/c
 	*/
 
 	defer func(){
@@ -116,10 +115,10 @@ func (mcts MonteCarloTreeSearcher) TimeManager(bank float64, increment float64, 
 	
 
 	if increment != 0.0 { 
-		if mcts.RunTime(increment, stopSignal) { return } 
+		if mcts.runTime(increment, stopSignal) { return } 
 	}
 	if bank != 0.0 { 
-		if mcts.RunTime(bank*math.Log(bank)/200, stopSignal) { return }
+		if mcts.runTime(bank*math.Log(bank)/200, stopSignal) { return }
 	}
 }
 
@@ -127,16 +126,17 @@ func (mcts MonteCarloTreeSearcher) TimeManager(bank float64, increment float64, 
 
 type MonteCarloTreeSearcher struct {
 	startPos dragontoothmg.Board
-	Head      *MonteCarloNode
-	treeFunc  func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64
-	evalFunc  func(dragontoothmg.Board) float64
+	Head     *MonteCarloNode
+	treeFunc func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64
+	evalFunc func(dragontoothmg.Board) float64
+	settings map[string]int
 }
 
-func (mcts MonteCarloTreeSearcher) PlayingWhite() bool {
+func (mcts *MonteCarloTreeSearcher) PlayingWhite() bool {
 	return mcts.startPos.Wtomove
 }
 
-func (mcts MonteCarloTreeSearcher) GetBestMove() dragontoothmg.Move {
+func (mcts *MonteCarloTreeSearcher) GetBestMove() dragontoothmg.Move {
 	bestIndex := 0
 	bestAverage := -1.0
 	for i, v := range mcts.Head.Children {

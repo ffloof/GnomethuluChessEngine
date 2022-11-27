@@ -6,14 +6,14 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"gnomethulu/mcts"
+	"gnomethulu/search"
 	"github.com/dylhunn/dragontoothmg"
 )
 
-func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64, evalFunc func(dragontoothmg.Board) float64){
+func Init(treeFunc func(*search.MonteCarloNode, *search.MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64, evalFunc func(dragontoothmg.Board) float64){
 	reader := bufio.NewReader(os.Stdin)
 
-	searcher := mcts.NewSearch(treeFunc, evalFunc)
+	searcher := search.NewSearch(treeFunc, evalFunc)
 	stop := make(chan bool, 2)
 
 	f, _ := os.Create("./input_log.txt")
@@ -40,7 +40,7 @@ func Init(treeFunc func(*mcts.MonteCarloNode, *mcts.MonteCarloNode, dragontoothm
 			case "quit":
 				return
 			case "ucinewgame":
-				searcher = mcts.NewSearch(treeFunc, evalFunc)
+				searcher = search.NewSearch(treeFunc, evalFunc)
 			case "position":
 				//first word wont work cause fen contains spaces
 				
