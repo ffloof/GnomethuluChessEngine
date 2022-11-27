@@ -1,4 +1,4 @@
-package evaluation
+package v1
 
 import (
 	"github.com/dylhunn/dragontoothmg"
@@ -16,7 +16,7 @@ func reverse(fixed int, s [64]int) [64]int{
 	return newS
 }
 
-var mgPawnTable [64]int = reverse(82, [64]int{
+var earlyPawnTable [64]int = reverse(82, [64]int{
 	  0,   0,   0,   0,   0,   0,  0,   0,
 	 98, 134,  61,  95,  68, 126, 34, -11,
 	 -6,   7,  26,  31,  65,  56, 25, -20,
@@ -27,7 +27,7 @@ var mgPawnTable [64]int = reverse(82, [64]int{
 	  0,   0,   0,   0,   0,   0,  0,   0,
 })
 
-var egPawnTable [64]int = reverse(94,[64]int{
+var latePawnTable [64]int = reverse(94,[64]int{
 	  0,   0,   0,   0,   0,   0,   0,   0,
 	178, 173, 158, 134, 147, 132, 165, 187,
 	 94, 100,  85,  67,  56,  53,  82,  84,
@@ -38,7 +38,7 @@ var egPawnTable [64]int = reverse(94,[64]int{
 	  0,   0,   0,   0,   0,   0,   0,   0,
 })
 
-var mgKnightTable [64]int = reverse(337, [64]int{
+var earlyKnightTable [64]int = reverse(337, [64]int{
 	-167, -89, -34, -49,  61, -97, -15, -107,
 	 -73, -41,  72,  36,  23,  62,   7,  -17,
 	 -47,  60,  37,  65,  84, 129,  73,   44,
@@ -49,7 +49,7 @@ var mgKnightTable [64]int = reverse(337, [64]int{
 	-105, -21, -58, -33, -17, -28, -19,  -23,
 })
 
-var egKnightTable [64]int = reverse(281,[64]int{
+var lateKnightTable [64]int = reverse(281,[64]int{
 	-58, -38, -13, -28, -31, -27, -63, -99,
 	-25,  -8, -25,  -2,  -9, -25, -24, -52,
 	-24, -20,  10,   9,  -1,  -9, -19, -41,
@@ -60,7 +60,7 @@ var egKnightTable [64]int = reverse(281,[64]int{
 	-29, -51, -23, -15, -22, -18, -50, -64,
 })
 
-var mgBishopTable [64]int = reverse(365, [64]int{
+var earlyBishopTable [64]int = reverse(365, [64]int{
 	-29,   4, -82, -37, -25, -42,   7,  -8,
 	-26,  16, -18, -13,  30,  59,  18, -47,
 	-16,  37,  43,  40,  35,  50,  37,  -2,
@@ -71,7 +71,7 @@ var mgBishopTable [64]int = reverse(365, [64]int{
 	-33,  -3, -14, -21, -13, -15, -39, -21,
 })
 
-var egBishopTable [64]int = reverse(297,[64]int{
+var lateBishopTable [64]int = reverse(297,[64]int{
 	-14, -21, -11,  -8, -7,  -9, -17, -24,
 	 -8,  -4,   7, -12, -3, -13,  -4, -14,
 	  2,  -8,   0,  -1, -2,   6,   0,   4,
@@ -82,7 +82,7 @@ var egBishopTable [64]int = reverse(297,[64]int{
 	-23,  -9, -23,  -5, -9, -16,  -5, -17,
 })
 
-var mgRookTable [64]int = reverse(447,[64]int{
+var earlyRookTable [64]int = reverse(447,[64]int{
 	 32,  42,  32,  51, 63,  9,  31,  43,
 	 27,  32,  58,  62, 80, 67,  26,  44,
 	 -5,  19,  26,  36, 17, 45,  61,  16,
@@ -93,7 +93,7 @@ var mgRookTable [64]int = reverse(447,[64]int{
 	-19, -13,  -5,  15, 12,  7, -37, -26,
 })
 
-var egRookTable [64]int = reverse(512,[64]int{
+var lateRookTable [64]int = reverse(512,[64]int{
 	13, 10, 18, 15, 12,  12,   8,   5,
 	11, 13, 13, 11, -3,   3,   8,   3,
 	 7,  7,  7,  5,  4,  -3,  -5,  -3,
@@ -105,7 +105,7 @@ var egRookTable [64]int = reverse(512,[64]int{
 })
 
 
-var mgQueenTable [64]int = reverse(1025,[64]int{
+var earlyQueenTable [64]int = reverse(1025,[64]int{
 	-28,   0,  29,  12,  59,  44,  43,  45,
 	-24, -39,  -5,   1, -16,  57,  28,  54,
 	-13, -17,   7,   8,  29,  56,  47,  57,
@@ -116,7 +116,7 @@ var mgQueenTable [64]int = reverse(1025,[64]int{
 	 -1, -18,  -9,  -5, -15, -25, -31, -50,
 })
 
-var egQueenTable [64]int = reverse(936,[64]int{
+var lateQueenTable [64]int = reverse(936,[64]int{
 	 -9,  22,  22,  27,  27,  19,  10,  20,
 	-17,  20,  32,  41,  58,  25,  30,   0,
 	-20,   6,   9,  49,  47,  35,  19,   9,
@@ -127,7 +127,7 @@ var egQueenTable [64]int = reverse(936,[64]int{
 	-33, -28, -22, -43,  -5, -32, -20, -41,
 })
 
-var mgKingTable [64]int = reverse(0,[64]int{
+var earlyKingTable [64]int = reverse(0,[64]int{
 	-65,  23,  16, -15, -56, -34,   2,  13,
 	 29,  -1, -20,  -7,  -8,  -4, -38, -29,
 	 -9,  24,   2, -16, -20,   6,  22, -22,
@@ -138,7 +138,7 @@ var mgKingTable [64]int = reverse(0,[64]int{
 	-15,  36,  12, -54,   8, -28,  30,  14,
 })
 
-var egKingTable [64]int = reverse(0,[64]int{
+var lateKingTable [64]int = reverse(0,[64]int{
 	-74, -35, -18, -18, -11,  15,   4, -17,
 	-12,  17,  14,  17,  17,  38,  23,  11,
 	 10,  17,  23,  15,  20,  45,  44,  13,
@@ -149,7 +149,7 @@ var egKingTable [64]int = reverse(0,[64]int{
 	-53, -34, -21, -11, -28, -14, -24, -43,
 })
 
-func Pesto(board dragontoothmg.Board) float64 {
+func Evaluate(board dragontoothmg.Board) float64 {
 	phase := 0
 	midScore := 0
 	endScore := 0
@@ -157,52 +157,52 @@ func Pesto(board dragontoothmg.Board) float64 {
 	for i := 0; i < 64; i++ {
 		if board.White.All>>i%2 == 1 {
 			if board.White.Pawns>>i%2 == 1 {
-				midScore += mgPawnTable[i]
-				endScore += egPawnTable[i]
+				midScore += earlyPawnTable[i]
+				endScore += latePawnTable[i]
 			} else if board.White.Knights>>i%2 == 1 {
-				midScore += mgKnightTable[i]
-				endScore += egKnightTable[i]
+				midScore += earlyKnightTable[i]
+				endScore += lateKnightTable[i]
 				phase += 1
 			} else if board.White.Bishops>>i%2 == 1 {
-				midScore += mgBishopTable[i]
-				endScore += egBishopTable[i]
+				midScore += earlyBishopTable[i]
+				endScore += lateBishopTable[i]
 				phase += 1
 			} else if board.White.Rooks>>i%2 == 1 {
-				midScore += mgRookTable[i]
-				endScore += egRookTable[i]
+				midScore += earlyRookTable[i]
+				endScore += lateRookTable[i]
 				phase += 2
 			} else if board.White.Queens>>i%2 == 1 {
-				midScore += mgQueenTable[i]
-				endScore += egQueenTable[i]
+				midScore += earlyQueenTable[i]
+				endScore += lateQueenTable[i]
 				phase += 4
 			} else if board.White.Kings>>i%2 == 1{
-				midScore += mgKingTable[i]
-				endScore += egKingTable[i]
+				midScore += earlyKingTable[i]
+				endScore += lateKingTable[i]
 			}
 		} else if board.Black.All>>i%2 == 1 {
 			j := i ^ 56
 			if board.Black.Pawns>>i%2 == 1 {
-				midScore -= mgPawnTable[j]
-				endScore -= egPawnTable[j]
+				midScore -= earlyPawnTable[j]
+				endScore -= latePawnTable[j]
 			} else if board.Black.Knights>>i%2 == 1 {
-				midScore -= mgKnightTable[j]
-				endScore -= egKnightTable[j]
+				midScore -= earlyKnightTable[j]
+				endScore -= lateKnightTable[j]
 				phase += 1
 			} else if board.Black.Bishops>>i%2 == 1 {
-				midScore -= mgBishopTable[j]
-				endScore -= egBishopTable[j]
+				midScore -= earlyBishopTable[j]
+				endScore -= lateBishopTable[j]
 				phase += 1
 			} else if board.Black.Rooks>>i%2 == 1 {
-				midScore -= mgRookTable[j]
-				endScore -= egRookTable[j]
+				midScore -= earlyRookTable[j]
+				endScore -= lateRookTable[j]
 				phase += 2
 			} else if board.Black.Queens>>i%2 == 1 {
-				midScore -= mgQueenTable[j]
-				endScore -= egQueenTable[j]
+				midScore -= earlyQueenTable[j]
+				endScore -= lateQueenTable[j]
 				phase += 4
 			} else if board.Black.Kings>>i%2 == 1{
-				midScore -= mgKingTable[j]
-				endScore -= egKingTable[j]
+				midScore -= earlyKingTable[j]
+				endScore -= lateKingTable[j]
 			}
 		}
 	}
