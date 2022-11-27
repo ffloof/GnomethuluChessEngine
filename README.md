@@ -17,15 +17,10 @@
  - Add options for pondering on opponents time
 
 #### Machine learning
- - Traditional Policy
  - Traditional Eval
+ - Traditional Policy
  - Self play policy and eval
  - Time management?
-
-#### Evaluation
- - Encourage trading when significantly ahead
- - Add king safety and pawn structure
- - Threefold drawing history
 
 #### Other
  - Benchmark comparison with direct storage of nodes as opposed to pointers

@@ -71,7 +71,7 @@ func Init(treeFunc func(*search.MonteCarloNode, *search.MonteCarloNode, dragonto
 				base := 0.0
 				increment := 0.0
 				if getFirstWord(arguments) == "infinite" {
-					increment = 1000
+					increment = 100000
 				} else if getStringAfter(arguments, "movetime") != "" {
 					increment = convertFloat(getFirstWord(getStringAfter(arguments, "movetime")))
 				} else {

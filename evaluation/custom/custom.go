@@ -1,4 +1,4 @@
-package v1
+package custom
 
 import (
 	"github.com/dylhunn/dragontoothmg"
@@ -149,7 +149,7 @@ var lateKingTable [64]int = reverse(0,[64]int{
 	-53, -34, -21, -11, -28, -14, -24, -43,
 })
 
-func Evaluate(board dragontoothmg.Board) float64 {
+func V1(board dragontoothmg.Board) float64 {
 	phase := 0
 	midScore := 0
 	endScore := 0

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 	"gnomethulu/search"
-	"gnomethulu/evaluation/v1"
+	"gnomethulu/evaluation/custom"
 	"gnomethulu/policy"
 	"github.com/dylhunn/dragontoothmg"
 )
@@ -13,7 +13,7 @@ import (
 func TestBenchmarks(t *testing.T){
 	t.Log("Start Game Positions")
 	for _, iters := range []int{10000, 100000, 1000000} {
-		searcher := search.NewSearch(policy.UCT, v1.Evaluate)
+		searcher := search.NewSearch(policy.UCT, custom.V1)
 		start := time.Now()
 		searcher.RunIterations(iters)
 		t.Log(int(float64(iters)/time.Since(start).Seconds()), "nps" , iters, "nodes")
@@ -22,7 +22,7 @@ func TestBenchmarks(t *testing.T){
 
 	t.Log("Middle Game Positions")
 	for _, iters := range []int{10000, 100000, 1000000} {
-		searcher := search.NewSearch(policy.UCT, v1.Evaluate)
+		searcher := search.NewSearch(policy.UCT, custom.V1)
 		searcher.SetPosition(dragontoothmg.ParseFen("r2q1rk1/pppb1pbp/2n1pnp1/3p4/3PP3/1PN2NP1/PBP2PBP/R2Q1RK1 b - - 0 9"))
 		start := time.Now()
 		searcher.RunIterations(iters)

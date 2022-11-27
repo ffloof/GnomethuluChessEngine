@@ -1,12 +1,12 @@
 package main
 
 import (
-	"gnomethulu/evaluation/v1"
+	"gnomethulu/evaluation/custom"
 	"gnomethulu/policy"
 	"gnomethulu/uci"
 )
 
 func main() {	
-	uci.Init(policy.UCT, v1.Evaluate)
+	uci.Init(policy.UCT, custom.V1)
 }
 
