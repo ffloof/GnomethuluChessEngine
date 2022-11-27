@@ -82,11 +82,6 @@ type MonteCarloNode struct {
 }
 
 func NewSearch(tree func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64, eval func(dragontoothmg.Board) float64) MonteCarloTreeSearcher {
-	defaultSettings := map[string]int{
-		"multipv": 3,
-		"maxnodes": 2000000,
-	}
-
 	board := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 
 	mcts := MonteCarloTreeSearcher{
@@ -94,7 +89,6 @@ func NewSearch(tree func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, 
 		Head:     newNode(nil, board),
 		treeFunc: tree,
 		evalFunc: eval,
-		settings: defaultSettings,
 	}
 	return mcts
 }

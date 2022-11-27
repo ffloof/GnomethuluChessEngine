@@ -30,7 +30,7 @@ func (mcts *MonteCarloTreeSearcher) PrintInfo() {
 	})
 
 	for i, key := range keys {
-		if i + 1 > mcts.settings["multipv"] {
+		if i + 1 > 3 {
 			break
 		}
 		move := key.String()
@@ -65,6 +65,8 @@ func (mcts *MonteCarloTreeSearcher) RunIterations(n int) {
 	}
 }
 
+const MAXNODES = 2000000
+
 func (mcts *MonteCarloTreeSearcher) runTime(seconds float64, stopSignal chan bool) bool {
 	start := time.Now()
 	for true {
@@ -72,7 +74,7 @@ func (mcts *MonteCarloTreeSearcher) runTime(seconds float64, stopSignal chan boo
 		mcts.PrintInfo()
 		elapsed := time.Since(start)
 		
-		if len(stopSignal) != 0 || mcts.settings["maxnodes"] < int(mcts.Head.Visits) {
+		if len(stopSignal) != 0 || MAXNODES < int(mcts.Head.Visits) {
 			return true
 		}
 
@@ -129,7 +131,6 @@ type MonteCarloTreeSearcher struct {
 	Head     *MonteCarloNode
 	treeFunc func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64
 	evalFunc func(dragontoothmg.Board) float64
-	settings map[string]int
 }
 
 func (mcts *MonteCarloTreeSearcher) PlayingWhite() bool {
