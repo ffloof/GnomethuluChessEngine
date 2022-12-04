@@ -8,9 +8,13 @@ def convert(board_fen):
 	inputlayer = numpy.zeros((6, 8, 8), dtype=numpy.int8)
 
 	for i in range(0,64):
+		j = i
+		if board.turn == chess.BLACK:
+			j = i ^ 56
+
 		piece = board.piece_at(i)
-		y = i//8
-		x = i%8
+		y = j//8
+		x = j%8
 		if piece != None:
 			inputlayer[0][y][x] = piece.color == board.turn
 			inputlayer[1][y][x] = piece.piece_type == chess.PAWN
@@ -27,15 +31,32 @@ def sigmoid(n): #Unrelated to neural net's sigmoid just for converting centipawn
 	elif n[0:2] == "#-":
 		return 0
 	else:
-		return 1/(1+numpy.exp(-(float(n) / 100)))
+		return 1/(1+numpy.exp(-(float(n) / 500)))
+
+def inverse(fen, n):
+	board = chess.Board()
+	board.set_fen(fen)
+
+	if board.turn == chess.BLACK:
+		n = 1-n
+	return n
 
 
 f = pandas.read_csv('boards.csv')
-xs = [convert(i) for i in list(f['fen'])]
-ys = [sigmoid(i) for i in list(f['eval'])]
+
+xs = list(f['fen'])
+ys = list(f['eval'])
+
+for i in range(len(ys)):
+	ys[i] = sigmoid(ys[i])
+	ys[i] = inverse(xs[i], ys[i])
+	xs[i] = convert(xs[i])
+
+
 xs = numpy.array(xs)
 ys = numpy.array(ys)
-print(ys)
+
+
 
 
 import tensorflow
@@ -49,18 +70,19 @@ import tensorflow.keras.callbacks as callbacks
 
 
 def build_model(conv_size, conv_depth):
-	board3d = layers.Input(shape=(6, 8, 8))
+	board3d = layers.Input(shape=(6, 8, 8), name="chessinput")
 	x = board3d
-	for _ in range(conv_depth):
+	for i in range(conv_depth):
 		x = layers.Conv2D(filters=conv_size, kernel_size=3, padding='same', activation='relu')(x)
 	x = layers.Flatten()(x)
 	x = layers.Dense(64, 'sigmoid')(x)
-	x = layers.Dense(1, 'sigmoid')(x)
+	x = layers.Dense(1, 'sigmoid', name="chessoutput")(x)
 	return models.Model(inputs=board3d, outputs=x)
 
 model = build_model(64, 5)
 
 model.compile(optimizer='adam',loss='mean_squared_error')
 
-model.fit(xs,ys,epochs=20)
-model.save("model.h5")
+model.fit(xs,ys,epochs=1)
+#model.save("model.h5")
+tensorflow.saved_model.save(model, "output/keras")
