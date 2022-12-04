@@ -29,9 +29,9 @@ def sigmoid(n): #Unrelated to neural net's sigmoid just for converting centipawn
 	if n[0:2] == "#+":
 		return 1
 	elif n[0:2] == "#-":
-		return 0
+		return -1
 	else:
-		return 1/(1+numpy.exp(-(float(n) / 500)))
+		return numpy.tanh(float(n) / 350)
 
 def inverse(fen, n):
 	board = chess.Board()
@@ -67,16 +67,16 @@ def build_model(conv_size, conv_depth):
 	board3d = layers.Input(shape=(6, 8, 8), name="chessinput")
 	x = board3d
 	for i in range(conv_depth):
-		x = layers.Conv2D(filters=conv_size, kernel_size=3, padding='same', activation='relu')(x)
+		x = layers.Conv2D(filters=conv_size, kernel_size=3, padding='same', activation='sigmoid')(x)
 	x = layers.Flatten()(x)
 	x = layers.Dense(64, 'sigmoid')(x)
-	x = layers.Dense(1, 'sigmoid', name="chessoutput")(x)
+	x = layers.Dense(1, 'tanh', name="chessoutput")(x)
 	return models.Model(inputs=board3d, outputs=x)
 
 model = build_model(32, 4)
 
 model.compile(optimizer='adam',loss='mean_squared_error')
 
-model.fit(xs,ys,epochs=100)
+model.fit(xs,ys,epochs=5)
 #model.save("model.h5")
 tensorflow.saved_model.save(model, "output/keras")

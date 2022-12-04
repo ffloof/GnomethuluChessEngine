@@ -70,7 +70,7 @@ const MAXNODES = 2000000
 func (mcts *MonteCarloTreeSearcher) runTime(seconds float64, stopSignal chan bool) bool {
 	start := time.Now()
 	for true {
-		mcts.RunIterations(10000)
+		mcts.RunIterations(1000)
 		mcts.PrintInfo()
 		elapsed := time.Since(start)
 		

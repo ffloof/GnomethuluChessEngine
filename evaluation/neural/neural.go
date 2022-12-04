@@ -47,7 +47,7 @@ func Init() func (board dragontoothmg.Board) float64 {
 		})
 
 		predictions := results[0]
-		return float64((predictions.Value().([][]float32)[0][0]*2)-1)
+		return float64((predictions.Value().([][]float32)[0][0]))
 	}
 }
 
