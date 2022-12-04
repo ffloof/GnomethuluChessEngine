@@ -5,11 +5,11 @@ import (
 	"gnomethulu/policy"
 	"gnomethulu/search"
 	"github.com/dylhunn/dragontoothmg"
-	"gnomethulu/evaluation/custom"
+	"gnomethulu/evaluation/traditional"
 )
 
 func TestMCTS(t *testing.T){
-	searcher := search.NewSearch(policy.UCT, custom.V1)
+	searcher := search.NewSearch(policy.UCT, traditional.CustomV1)
 	searcher.SetPosition(dragontoothmg.ParseFen("rnbqkb1r/ppp2ppp/8/3pN1nQ/8/8/PPPP1PPP/RNB1KB1R w KQkq - 0 6"))
 
 	searcher.RunIterations(500000)

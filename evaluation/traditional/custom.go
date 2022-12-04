@@ -2,20 +2,9 @@ package traditional
 
 import (
 	"github.com/dylhunn/dragontoothmg"
-	"math"
 )
 
-// Tables for pesto eval
-//TODO: see if its worth creating two arrays one inversed and one not so that it doesnt have to do i^56 at runtime
-func reverse(fixed int, s [64]int) [64]int{
-	var newS [64]int
-	for i := 0; i < 64; i++ {
-		j := i ^ 56
-		newS[j] = fixed+s[i]
-	}
-	return newS
-}
-
+// Tables for custom eval
 var earlyPawnTable [64]int = reverse(82, [64]int{
 	  0,   0,   0,   0,   0,   0,  0,   0,
 	 98, 134,  61,  95,  68, 126, 34, -11,
@@ -149,7 +138,7 @@ var lateKingTable [64]int = reverse(0,[64]int{
 	-53, -34, -21, -11, -28, -14, -24, -43,
 })
 
-func V1(board dragontoothmg.Board) float64 {
+func CustomV1(board dragontoothmg.Board) float64 {
 	phase := 0
 	midScore := 0
 	endScore := 0
@@ -219,15 +208,4 @@ func V1(board dragontoothmg.Board) float64 {
 	}
 
 	return SigmoidLike(eval)
-}
-
-var SigmoidCurve float64 = 0.4
-var SigmoidScale float64 = 0.9
-
-
-// Very similar to a signmoid function except its on the range [-scale,scale]
-// Play with c and a parameters
-func SigmoidLike(n float64) float64 {
-	n *= SigmoidCurve
-	return ((2*SigmoidScale) / (1 + math.Exp(-n))) - SigmoidScale
 }
