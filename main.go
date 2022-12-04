@@ -1,14 +1,13 @@
 package main
 
 import (
-	"gnomethulu/evaluation/custom"
+	//"gnomethulu/evaluation/traditional"
 	"gnomethulu/policy"
 	"gnomethulu/uci"
 	"gnomethulu/evaluation/neural"
 )
 
 func main() {	
-	neural.Init()
-	uci.Init(policy.UCT, custom.V1)
+	uci.Init(policy.UCT, neural.Init())
 }
 

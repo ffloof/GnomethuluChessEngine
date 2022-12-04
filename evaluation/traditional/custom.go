@@ -1,4 +1,4 @@
-package custom
+package traditional
 
 import (
 	"github.com/dylhunn/dragontoothmg"
