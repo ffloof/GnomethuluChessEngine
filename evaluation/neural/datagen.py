@@ -3,45 +3,66 @@ import chess.engine
 import random
 import numpy
 
+# We want to focus on evaluating relatively quiet boards
+# Otherwise it can be very confusing with all the tactics when several pieces are hanging
+# We can rely on the engine's search to find tactics in the more complicated positions
+# Playing captures more often will lead to simpler positions that tend to be quieter
+
+def capture_moves(board):
+	moves = []
+	for move in board.legal_moves:
+		if board.is_capture(move):
+			moves.append(move)
+	return moves
+
 def random_board(max_depth=100):
 	board = chess.Board()
 	depth = random.randrange(0, max_depth)
 	for _ in range(depth):
-		all_moves = list(board.legal_moves)
-		random_move = random.choice(all_moves)
+		captures = capture_moves(board)
+
+		if len(captures) == 0 or random.randint(1,3) > 1: #2/3 times just play a random move, 1/3 of the time play a random capturing move
+			all_moves = list(board.legal_moves)
+			random_move = random.choice(all_moves)
+		else:
+			random_move = random.choice(captures)
+
 		board.push(random_move)
 		if board.is_game_over():
-			break
+			board.pop()
+			return board
 	return board
 
+sf = chess.engine.SimpleEngine.popen_uci('./stockfish_15_x64_avx2.exe')
 def stockfish(board, depth):
-	with chess.engine.SimpleEngine.popen_uci('./stockfish_15_x64_avx2.exe') as sf:
-		result = sf.analyse(board, chess.engine.Limit(depth=depth))
-		score = result['score'].white().score()
-		return score
-
-rb = random_board()
-
-def convert(board):
-	inputlayer = numpy.zeros((6, 8, 8), dtype=numpy.int8)
-
-	for i in range(0,64):
-		piece = rb.piece_at(i)
-		if piece != None:
-			y = i//8
-			x = i%8
-			inputlayer[0][y][x] = piece.color == board.turn
-			inputlayer[1][y][x] = piece.piece_type == chess.PAWN
-			inputlayer[2][y][x] = piece.piece_type == chess.KNIGHT
-			inputlayer[3][y][x] = piece.piece_type == chess.BISHOP or piece.piece_type == chess.QUEEN
-			inputlayer[4][y][x] = piece.piece_type == chess.ROOK or piece.piece_type == chess.QUEEN
-			inputlayer[5][y][x] = piece.piece_type == chess.KING
-
-	return inputlayer
-
-#print(rb.piece_at(0))
-#print(rb)
-#convert(rb) 	
-#print(stockfish(rb, 15))
+	result = sf.analyse(board, chess.engine.Limit(depth=depth))
+	return str(result['score'].white())
 
 
+data = []
+
+amount = 10000
+for i in range(amount):
+	print(i+1, "/", amount)
+	rb = random_board()
+	evaluation = 0
+
+	evaluation = 0
+	outcome = rb.outcome()
+	if outcome == None:
+		evaluation = stockfish(rb,10)
+	elif outcome.winner == None:
+		evaluation = "+0"
+	elif outcome.winner == chess.WHITE:
+		evaluation = "#+0"
+	else:
+		evaluation = "#-0"
+
+	data.append(rb.fen() + "," + str(evaluation) + "\n")
+
+with open('boards.csv','w') as file:
+	file.write("fen,eval\n")
+	for line in data:
+		file.write(line)
+
+sf.quit()
