@@ -2,7 +2,7 @@ import numpy
 import chess
 from tensorflow.keras import models
 
-model = models.load_model('model.h5')
+model = models.load_model('modelv2.h5')
 
 def convert(board_fen):
 	board = chess.Board()
@@ -22,6 +22,6 @@ def convert(board_fen):
 			inputlayer[5][y][x] = piece.piece_type == chess.KING
 	return inputlayer
 
-board3d = convert("r1b2rk1/pppp1ppp/2n2q2/8/1b6/2P2N2/P2PPPPP/RN1QKB1R w KQ - 1 7")
+board3d = convert("r2q1rk1/p3ppbp/1pn2np1/2pp4/3P1Bb1/P1PBPN2/1P1N1PPP/R2Q1RK1 w - - 1 11")
 board3d = numpy.expand_dims(board3d, 0)
 print(model(board3d)[0][0])

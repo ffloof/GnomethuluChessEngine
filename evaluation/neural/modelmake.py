@@ -54,13 +54,13 @@ def build_model(conv_size, conv_depth):
 	for _ in range(conv_depth):
 		x = layers.Conv2D(filters=conv_size, kernel_size=3, padding='same', activation='relu')(x)
 	x = layers.Flatten()(x)
-	x = layers.Dense(64, 'relu')(x)
+	x = layers.Dense(64, 'sigmoid')(x)
 	x = layers.Dense(1, 'sigmoid')(x)
 	return models.Model(inputs=board3d, outputs=x)
 
-model = build_model(32, 4)
+model = build_model(64, 5)
 
-model.compile(optimizer='adam',loss= tensorflow.keras.losses.BinaryCrossentropy(from_logits=True),metrics=['accuracy'])
+model.compile(optimizer='adam',loss='mean_squared_error')
 
-model.fit(xs,ys,epochs=100)
+model.fit(xs,ys,epochs=20)
 model.save("model.h5")

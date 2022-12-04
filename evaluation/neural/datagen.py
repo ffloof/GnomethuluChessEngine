@@ -2,6 +2,7 @@ import chess
 import chess.engine
 import random
 import numpy
+import sys
 
 # We want to focus on evaluating relatively quiet boards
 # Otherwise it can be very confusing with all the tactics when several pieces are hanging
@@ -41,7 +42,7 @@ def stockfish(board, depth):
 
 data = []
 
-amount = 10000
+amount = int(sys.argv[1])
 for i in range(amount):
 	print(i+1, "/", amount)
 	rb = random_board()
