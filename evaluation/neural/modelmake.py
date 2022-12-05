@@ -38,7 +38,7 @@ def inverse(fen, n):
 	board.set_fen(fen)
 
 	if board.turn == chess.BLACK:
-		n = 1-n
+		n = -n
 	return n
 
 
@@ -73,10 +73,10 @@ def build_model(conv_size, conv_depth):
 	x = layers.Dense(1, 'tanh', name="chessoutput")(x)
 	return models.Model(inputs=board3d, outputs=x)
 
-model = build_model(32, 4)
+model = build_model(32, 3)
 
 model.compile(optimizer='adam',loss='mean_squared_error')
+model.summary()
 
-model.fit(xs,ys,epochs=5)
-#model.save("model.h5")
-tensorflow.saved_model.save(model, "output/keras")
+model.fit(xs,ys,epochs=20)
+tensorflow.saved_model.save(model, "version1")
