@@ -55,7 +55,7 @@ func (mcts *MonteCarloTreeSearcher) SetPosition(nextState dragontoothmg.Board){
 	}
 
 	mcts.startPos = nextState
-	mcts.Head = newNode(nil, mcts.startPos)
+	mcts.Head = newNode(nil, &mcts.startPos)
 }
 
 
@@ -129,8 +129,8 @@ func (mcts *MonteCarloTreeSearcher) TimeManager(bank float64, increment float64,
 type MonteCarloTreeSearcher struct {
 	startPos dragontoothmg.Board
 	Head     *MonteCarloNode
-	treeFunc func(float64, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64
-	evalFunc func(dragontoothmg.Board) float64
+	treeFunc func(*dragontoothmg.Board, dragontoothmg.Move) float64 //TODO: convert boards to *board
+	evalFunc func(*dragontoothmg.Board) float64
 	PolicyExplore float64
 }
 

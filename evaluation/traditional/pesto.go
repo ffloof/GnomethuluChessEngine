@@ -148,7 +148,7 @@ var pestoLateKingTable [64]int = reverse(0,[64]int{
     -53, -34, -21, -11, -28, -14, -24, -43,
 })
 
-func Pesto(board dragontoothmg.Board) float64 {
+func Pesto(board *dragontoothmg.Board) float64 {
 	phase := 0
 	midScore := 0
 	endScore := 0
