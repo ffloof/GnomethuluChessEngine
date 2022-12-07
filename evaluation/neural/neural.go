@@ -36,7 +36,7 @@ func convert(board dragontoothmg.Board) *tf.Tensor {
 
 
 func Init() func (board dragontoothmg.Board) float64 {
-	model := tfgo.LoadModel("./evaluation/neural/output/keras/", []string{"serve"}, nil)
+	model := tfgo.LoadModel("./evaluation/neural/version6/", []string{"serve"}, nil)
 
 	return func (board dragontoothmg.Board) float64 {
 		boardInput := convert(board)

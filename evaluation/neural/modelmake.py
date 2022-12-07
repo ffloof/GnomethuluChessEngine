@@ -31,7 +31,7 @@ def sigmoid(n): #Unrelated to neural net's sigmoid just for converting centipawn
 	elif n[0:2] == "#-":
 		return -1
 	else:
-		return numpy.tanh(float(n) / 350)
+		return numpy.tanh(float(n) / 500)
 
 def inverse(fen, n):
 	board = chess.Board()
@@ -44,14 +44,16 @@ def inverse(fen, n):
 
 f = pandas.read_csv('boards.csv')
 
-xs = list(f['fen'])
-ys = list(f['eval'])
+x1 = list(f['fen'])
+y1 = list(f['eval'])
+xs=[]
+ys=[]
 
-for i in range(len(ys)):
-	ys[i] = sigmoid(ys[i])
-	ys[i] = inverse(xs[i], ys[i])
-	xs[i] = convert(xs[i])
-
+# TODO: figure out if these are causing the list to shift, might be why the operation is so slowwwws
+# basically just create new where we append new results to
+for i in range(len(y1)):
+	ys.append(inverse(x1[i], sigmoid(y1[i])))
+	xs.append(convert(x1[i]))
 
 xs = numpy.array(xs)
 ys = numpy.array(ys)
@@ -67,16 +69,20 @@ def build_model(conv_size, conv_depth):
 	board3d = layers.Input(shape=(6, 8, 8), name="chessinput")
 	x = board3d
 	for i in range(conv_depth):
-		x = layers.Conv2D(filters=conv_size, kernel_size=3, padding='same', activation='sigmoid')(x)
+		x = layers.Conv2D(filters=conv_size, kernel_size=3, padding='same', activation='relu')(x)
 	x = layers.Flatten()(x)
-	x = layers.Dense(64, 'sigmoid')(x)
+	x = layers.Dense(64, 'relu')(x)
 	x = layers.Dense(1, 'tanh', name="chessoutput")(x)
 	return models.Model(inputs=board3d, outputs=x)
 
-model = build_model(32, 3)
+model = build_model(16, 3)
 
 model.compile(optimizer='adam',loss='mean_squared_error')
 model.summary()
 
-model.fit(xs,ys,epochs=20)
-tensorflow.saved_model.save(model, "version1")
+model.fit(xs,ys,epochs=25,batch_size=2048)
+tensorflow.saved_model.save(model, "version7")
+
+# Version5 relu 3 conv layers, epochs = 10, 500k dataset
+# Version6 ''', epochs = 25
+# Version7 ''' conv layers conv size is only 16

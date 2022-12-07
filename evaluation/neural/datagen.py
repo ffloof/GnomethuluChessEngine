@@ -30,13 +30,16 @@ def random_board(max_depth=100):
 
 		board.push(random_move)
 		if board.is_game_over():
-			board.pop()
 			return board
 	return board
 
 sf = chess.engine.SimpleEngine.popen_uci('./stockfish_15_x64_avx2.exe')
-def stockfish(board, depth):
-	result = sf.analyse(board, chess.engine.Limit(depth=depth))
+def stockfish(board):
+	# Shallow evaluations are often preferable for a number of reasons
+	# Fewer deep tactics, and mates that an evaluation would struggle to find
+	# Exponentially generation of dataset
+	# Returns a value closer to the nnue eval of the position which is roughly what were striving for
+	result = sf.analyse(board, chess.engine.Limit(depth=5))
 	return str(result['score'].white())
 
 
@@ -51,13 +54,15 @@ for i in range(amount):
 	evaluation = 0
 	outcome = rb.outcome()
 	if outcome == None:
-		evaluation = stockfish(rb,10)
+		evaluation = stockfish(rb)
 	elif outcome.winner == None:
 		evaluation = "+0"
 	elif outcome.winner == chess.WHITE:
 		evaluation = "#+0"
 	else:
 		evaluation = "#-0"
+
+
 
 	data.append(rb.fen() + "," + str(evaluation) + "\n")
 
