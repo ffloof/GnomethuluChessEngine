@@ -2,10 +2,8 @@ import pandas
 import numpy 
 import chess
 
-def convert(board_fen):
-	board = chess.Board()
-	board.set_fen(board_fen)
-	inputlayer = numpy.zeros((6, 8, 8), dtype=numpy.int8)
+def board_convert(board):
+	inputlayer = numpy.zeros((8, 8, 6), dtype=numpy.int8)
 
 	for i in range(0,64):
 		j = i
@@ -16,47 +14,59 @@ def convert(board_fen):
 		y = j//8
 		x = j%8
 		if piece != None:
-			inputlayer[0][y][x] = piece.color == board.turn
-			inputlayer[1][y][x] = piece.piece_type == chess.PAWN
-			inputlayer[2][y][x] = piece.piece_type == chess.KNIGHT
-			inputlayer[3][y][x] = piece.piece_type == chess.BISHOP or piece.piece_type == chess.QUEEN
-			inputlayer[4][y][x] = piece.piece_type == chess.ROOK or piece.piece_type == chess.QUEEN
-			inputlayer[5][y][x] = piece.piece_type == chess.KING
+			inputlayer[y][x][0] = piece.color == board.turn
+			inputlayer[y][x][1] = piece.piece_type == chess.PAWN
+			inputlayer[y][x][2] = piece.piece_type == chess.KNIGHT
+			inputlayer[y][x][3] = piece.piece_type == chess.BISHOP or piece.piece_type == chess.QUEEN
+			inputlayer[y][x][4] = piece.piece_type == chess.ROOK or piece.piece_type == chess.QUEEN
+			inputlayer[y][x][5] = piece.piece_type == chess.KING
 	return inputlayer
 
 
-def sigmoid(n): #Unrelated to neural net's sigmoid just for converting centipawn rating to a nice range	
+def eval_convert(board, n):
+	value = 0
 	if n[0:2] == "#+":
-		return 1
+		value = 1
 	elif n[0:2] == "#-":
-		return -1
+		value = -1
 	else:
-		return numpy.tanh(float(n) / 500)
+		value = numpy.tanh(float(n) / 500)
+	
+	if board.turn == chess.BLACK:
+		value = -value
+	return value
 
-def inverse(fen, n):
-	board = chess.Board()
-	board.set_fen(fen)
-
+def inverse(board, n):
 	if board.turn == chess.BLACK:
 		n = -n
 	return n
 
 
+print("a")
 f = pandas.read_csv('boards.csv')
+print("b")
 
 x1 = list(f['fen'])
 y1 = list(f['eval'])
 xs=[]
 ys=[]
 
-# TODO: figure out if these are causing the list to shift, might be why the operation is so slowwwws
-# basically just create new where we append new results to
+print("c")
+# This step is taking way too long 
+# TODO: figure out why
+
+board = chess.Board()
 for i in range(len(y1)):
-	ys.append(inverse(x1[i], sigmoid(y1[i])))
-	xs.append(convert(x1[i]))
+	board.set_fen(x1[i])
+	evaluation = y1[i]
+	ys.append(eval_convert(board, evaluation))
+	xs.append(board_convert(board))
+
+print("d")
 
 xs = numpy.array(xs)
 ys = numpy.array(ys)
+print("e")
 
 import tensorflow
 import tensorflow.keras.models as models
@@ -66,7 +76,7 @@ import tensorflow.keras.optimizers as optimizers
 import tensorflow.keras.callbacks as callbacks
 
 def build_model(conv_size, conv_depth):
-	board3d = layers.Input(shape=(6, 8, 8), name="chessinput")
+	board3d = layers.Input(shape=(8, 8, 6), name="chessinput")
 	x = board3d
 	for i in range(conv_depth):
 		x = layers.Conv2D(filters=conv_size, kernel_size=3, padding='same', activation='relu')(x)
@@ -80,9 +90,10 @@ model = build_model(16, 3)
 model.compile(optimizer='adam',loss='mean_squared_error')
 model.summary()
 
-model.fit(xs,ys,epochs=25,batch_size=2048)
-tensorflow.saved_model.save(model, "version7")
+model.fit(xs,ys,epochs=100,batch_size=2048)
+tensorflow.saved_model.save(model, "version8?")
 
 # Version5 relu 3 conv layers, epochs = 10, 500k dataset
 # Version6 ''', epochs = 25
-# Version7 ''' conv layers conv size is only 16
+# Version7 relu 3 conv layers new ordering,filters16,'''
+# Version8 ''', epochs = 100
