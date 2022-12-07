@@ -9,7 +9,8 @@ func (mcts *MonteCarloTreeSearcher) iteration() {
 	evaluation := 0.0
 
 	// 1. Selection
-	board := mcts.startPos
+	copiedBoard := mcts.startPos
+	board := &copiedBoard
 	node := mcts.Head
 
 selectionLoop:
@@ -22,26 +23,24 @@ selectionLoop:
 			}
 			break selectionLoop
 		}
+		
 		// If any null node exists expand it otherwise choose the one with best uct score
-
-		//TODO: benchmark adding a boolean to mark nodes as fully expanded to skip this step
 		if !node.FullyExpanded {
 			for i := range node.Children {
 				if node.Children[i] == nil {
 					// 2. Expansion and Evaluation
 					board.Apply(node.Moves[i])
 
-					nextNode := newNode(node, &board)
+					nextNode := newNode(node, board)
 					node.Children[i] = nextNode
 
 					node = nextNode
-					evaluation = mcts.evalFunc(&board)
+					evaluation = mcts.evalFunc(board)
 					break selectionLoop
 				} else if i == len(node.Children) - 1 {
 					node.FullyExpanded = true
 				}
 			}
-
 		}
 
 		bestChildIndex := 0
@@ -49,7 +48,7 @@ selectionLoop:
 		parentConstant := mcts.PolicyExplore * math.Log(node.Visits)
 		for i, child := range node.Children {
 			//score := mcts.treeFunc(parentConstant, child, board, node.Moves[i])
-			score := (child.Value / child.Visits) + (mcts.treeFunc(&board, node.Moves[i]) * math.Sqrt(parentConstant/child.Visits))
+			score := (child.Value / child.Visits) + (mcts.treeFunc(board, node.Moves[i]) * math.Sqrt(parentConstant/child.Visits))
 			if score > bestScore {
 				bestScore = score
 				bestChildIndex = i
@@ -70,10 +69,8 @@ selectionLoop:
 	}
 }
 
-//TODO: try arena allocation
 func newNode(parent *MonteCarloNode, board *dragontoothmg.Board) *MonteCarloNode {
 	moves := board.GenerateLegalMoves()
-
 	children := make([]*MonteCarloNode, len(moves), len(moves))
 
 	return &MonteCarloNode{
@@ -83,9 +80,9 @@ func newNode(parent *MonteCarloNode, board *dragontoothmg.Board) *MonteCarloNode
 	}
 }
 
-type MonteCarloNode struct {
+type MonteCarloNode struct { //TODO: look into if we can garbage collect some nodes or at least node.Moves
 	Parent   *MonteCarloNode
-	Children []*MonteCarloNode
+	Children []*MonteCarloNode //TODO: try to mitigate pointer chasing
 	Moves    []dragontoothmg.Move
 	Value    float64
 	Visits   float64
