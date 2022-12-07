@@ -10,7 +10,8 @@ import (
 	"github.com/dylhunn/dragontoothmg"
 )
 
-func Init(treeFunc func(*search.MonteCarloNode, *search.MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64, evalFunc func(dragontoothmg.Board) float64){
+//TODO: replace all these nasty long func expressions with custom types
+func Init(treeFunc func(float64, *search.MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64, evalFunc func(dragontoothmg.Board) float64){
 	reader := bufio.NewReader(os.Stdin)
 
 	searcher := search.NewSearch(treeFunc, evalFunc)

@@ -24,4 +24,10 @@ func TestMCTS(t *testing.T){
 	t.Log(best.String())
 }
 
+func BenchmarkMCTS(b *testing.B){
+	searcher := search.NewSearch(policy.UCT, traditional.CustomV1)
+	searcher.SetPosition(dragontoothmg.ParseFen("rnbqkb1r/ppp2ppp/8/3pN1nQ/8/8/PPPP1PPP/RNB1KB1R w KQkq - 0 6"))
+
+	searcher.RunIterations(1000000)
+}
 

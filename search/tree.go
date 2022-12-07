@@ -2,6 +2,7 @@ package search
 
 import (
 	"github.com/dylhunn/dragontoothmg"
+	"math"
 )
 
 func (mcts *MonteCarloTreeSearcher) iteration() {
@@ -39,8 +40,9 @@ selectionLoop:
 
 		bestChildIndex := 0
 		bestScore := -1.0
-		for i, v := range node.Children {
-			score := mcts.treeFunc(node, v, board, node.Moves[i])
+		parentConstant := mcts.PolicyExplore * math.Log(node.Visits)
+		for i, child := range node.Children {
+			score := mcts.treeFunc(parentConstant, child, board, node.Moves[i])
 			if score > bestScore {
 				bestScore = score
 				bestChildIndex = i
@@ -81,7 +83,7 @@ type MonteCarloNode struct {
 	Visits   float64
 }
 
-func NewSearch(tree func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64, eval func(dragontoothmg.Board) float64) MonteCarloTreeSearcher {
+func NewSearch(tree func(float64, *MonteCarloNode, dragontoothmg.Board, dragontoothmg.Move) float64, eval func(dragontoothmg.Board) float64) MonteCarloTreeSearcher {
 	board := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 
 	mcts := MonteCarloTreeSearcher{
@@ -89,6 +91,7 @@ func NewSearch(tree func(*MonteCarloNode, *MonteCarloNode, dragontoothmg.Board, 
 		Head:     newNode(nil, board),
 		treeFunc: tree,
 		evalFunc: eval,
+		PolicyExplore: 2.0,
 	}
 	return mcts
 }
