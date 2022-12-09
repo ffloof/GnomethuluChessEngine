@@ -96,6 +96,7 @@ func (mcts *MonteCarloTreeSearcher) TimeManager(bank float64, increment float64,
 	// Mate in one detection
 	for _, move := range mcts.Head.Moves {
 		board := mcts.startPos
+		board.Apply(move)
 		moves := board.GenerateLegalMoves()
 		if len(moves) == 0 {
 			if board.OurKingInCheck() {
