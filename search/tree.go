@@ -52,7 +52,7 @@ selectionLoop:
 		parentConstant := mcts.PolicyExplore * math.Log(node.Visits)
 		for i, child := range node.Children {
 			//score := mcts.treeFunc(parentConstant, child, board, node.Moves[i])
-			score := (child.Value / child.Visits) + (mcts.treeFunc(board, node.Moves[i]) * math.Sqrt(parentConstant/child.Visits))
+			score := (-child.Value / child.Visits) + (mcts.treeFunc(board, node.Moves[i]) * math.Sqrt(parentConstant/child.Visits))
 			if score > bestScore {
 				bestScore = score
 				bestChildIndex = i
@@ -66,10 +66,10 @@ selectionLoop:
 	// 3. Backpropogation
 
 	for node != nil {
-		evaluation = -evaluation
 		node.Visits++
 		node.Value += evaluation
 		node = node.Parent
+		evaluation = -evaluation
 	}
 }
 
