@@ -143,9 +143,10 @@ func (mcts *MonteCarloTreeSearcher) GetBestMove() dragontoothmg.Move {
 	bestIndex := 0
 	bestAverage := -1.0
 	for i, v := range mcts.Head.Children {
-		if v.Value/v.Visits > bestAverage {
+		average := -v.Value/v.Visits
+		if average > bestAverage {
 			bestIndex = i
-			bestAverage = v.Value / v.Visits
+			bestAverage = average
 		}
 	}
 	return mcts.Head.Moves[bestIndex]
