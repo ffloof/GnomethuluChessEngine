@@ -26,6 +26,7 @@ selectionLoop:
 		
 		// If any null node exists expand it otherwise choose the one with best uct score
 		if !node.FullyExpanded {
+			nowFull := true
 			for i := range node.Children {
 				if node.Children[i] == nil {
 					// 2. Expansion and Evaluation
@@ -36,10 +37,13 @@ selectionLoop:
 
 					node = nextNode
 					evaluation = mcts.evalFunc(board)
+					nowFull = false
 					break selectionLoop
-				} else if i == len(node.Children) - 1 {
-					node.FullyExpanded = true
 				}
+			}
+
+			if nowFull {
+				node.FullyExpanded = true
 			}
 		}
 
