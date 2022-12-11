@@ -17,7 +17,7 @@ func inverseSigmoid(n float64) float64 {
 func (mcts *MonteCarloTreeSearcher) PrintInfo() {
 	moveMap := map[dragontoothmg.Move]float64{}
 	for i, move := range mcts.Head.Moves {
-		moveMap[move] = mcts.Head.Children[i].Value / mcts.Head.Children[i].Visits
+		moveMap[move] = -mcts.Head.Children[i].Value / mcts.Head.Children[i].Visits
 	}
 
 	keys := make([]dragontoothmg.Move, 0, len(moveMap))

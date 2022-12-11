@@ -17,7 +17,7 @@ selectionLoop:
 	for true {
 		if len(node.Moves) == 0 {
 			if board.OurKingInCheck() {
-				evaluation = -1.0
+				evaluation = -MateAdjust(node)
 			} else {
 				evaluation = 0.0
 			}
@@ -101,7 +101,26 @@ func NewSearch(tree func(*dragontoothmg.Board, dragontoothmg.Move) float64, eval
 		Head:     newNode(nil, &board),
 		treeFunc: tree,
 		evalFunc: eval,
-		PolicyExplore: 0.5,
+		PolicyExplore: 3.0,
 	}
 	return mcts
+}
+
+// When a mate in 1 since it is a terminal state win any previously explored branches of the parent are irrelevant, since it will always opt for mate in 1
+// So MateAdjust() will return the eval backpropogate to correct this difference and remove all other branches from parent node
+// This helps the algorithm find mates exponentially faster than it otherwise would
+func MateAdjust(node *MonteCarloNode) float64 {
+	for i, child := range node.Parent.Children {
+		if node == child {
+			// Make the mate the only possible node
+			move := node.Parent.Moves[i]
+			node.Parent.Children = []*MonteCarloNode{node}
+			node.Parent.Moves = []dragontoothmg.Move{move}
+
+			// The value of the parent should be equal to visits since it has won the game
+			// So backpropogation will propogate node.Parent.Visits - node.Parent.Value to correct the value up the tree
+			// (node.Parent.Visits - node.Parent.Value) + node.Parent.Value = node.Parent.Visits	
+		}
+	}
+	return node.Parent.Visits - node.Parent.Value
 }
