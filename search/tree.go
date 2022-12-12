@@ -6,6 +6,8 @@ import (
 )
 
 func (mcts *MonteCarloTreeSearcher) iteration() {
+	history := map[uint64]bool{}
+
 	evaluation := 0.0
 
 	// 1. Selection
@@ -15,6 +17,13 @@ func (mcts *MonteCarloTreeSearcher) iteration() {
 
 selectionLoop:
 	for true {
+		if history[board.Hash()] {
+			evaluation = 0.0
+			break selectionLoop
+		} else {
+			history[board.Hash()] = true
+		}
+
 		if len(node.Moves) == 0 {
 			if !node.FullyExpanded {
 				node.Moves = board.GenerateLegalMoves()
