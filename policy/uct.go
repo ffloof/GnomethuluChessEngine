@@ -1,7 +1,7 @@
 package policy
 
 import (
-	"github.com/dylhunn/dragontoothmg"
+	"github.com/ffloof/dragontoothmg"
 )
 
 func UCT(board *dragontoothmg.Board, move dragontoothmg.Move) float64 {

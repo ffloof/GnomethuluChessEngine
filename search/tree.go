@@ -1,7 +1,7 @@
 package search
 
 import (
-	"github.com/dylhunn/dragontoothmg"
+	"github.com/ffloof/dragontoothmg"
 	"math"
 )
 
@@ -96,7 +96,7 @@ func newNode(parent *MonteCarloNode, board *dragontoothmg.Board) MonteCarloNode 
 
 type MonteCarloNode struct { //TODO: look into if we can garbage collect some nodes or at least node.Moves
 	Parent   *MonteCarloNode
-	Children []MonteCarloNode //TODO: try to mitigate pointer chasing
+	Children []MonteCarloNode
 	Moves    []dragontoothmg.Move
 	Value    float64
 	Visits   float64

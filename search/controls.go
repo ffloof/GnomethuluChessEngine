@@ -1,7 +1,7 @@
 package search
 
 import (
-	"github.com/dylhunn/dragontoothmg"
+	"github.com/ffloof/dragontoothmg"
 	"time"
 	"sort"
 	"fmt"

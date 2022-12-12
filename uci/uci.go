@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"gnomethulu/search"
-	"github.com/dylhunn/dragontoothmg"
+	"github.com/ffloof/dragontoothmg"
 )
 
 //TODO: replace all these nasty long func expressions with custom types

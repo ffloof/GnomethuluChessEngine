@@ -4,7 +4,7 @@ import (
 	"testing"
 	"gnomethulu/policy"
 	"gnomethulu/search"
-	"github.com/dylhunn/dragontoothmg"
+	"github.com/ffloof/dragontoothmg"
 	"gnomethulu/evaluation/traditional"
 )
 

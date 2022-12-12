@@ -7,7 +7,7 @@ import (
 	"gnomethulu/search"
 	"gnomethulu/evaluation/traditional"
 	"gnomethulu/policy"
-	"github.com/dylhunn/dragontoothmg"
+	"github.com/ffloof/dragontoothmg"
 )
 
 func TestBenchmarks(t *testing.T){

@@ -1,7 +1,7 @@
 package traditional
 
 import (
-	"github.com/dylhunn/dragontoothmg"
+	"github.com/ffloof/dragontoothmg"
 	"math"
 )
 

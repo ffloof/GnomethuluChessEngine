@@ -2,7 +2,7 @@ package main
 
 import (
 	"testing"
-	"github.com/dylhunn/dragontoothmg"
+	"github.com/ffloof/dragontoothmg"
 	"gnomethulu/evaluation/traditional"
 )
 
