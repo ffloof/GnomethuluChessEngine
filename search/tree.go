@@ -16,12 +16,19 @@ func (mcts *MonteCarloTreeSearcher) iteration() {
 selectionLoop:
 	for true {
 		if len(node.Moves) == 0 {
-			if board.OurKingInCheck() {
-				evaluation = -MateAdjust(node)
-			} else {
-				evaluation = 0.0
+			if !node.FullyExpanded {
+				node.Moves = board.GenerateLegalMoves()
+				node.Children = make([]*MonteCarloNode, len(node.Moves), len(node.Moves))
 			}
-			break selectionLoop
+
+			if len(node.Moves) == 0 {
+				if board.OurKingInCheck() {
+					evaluation = -MateAdjust(node)
+				} else {
+					evaluation = 0.0
+				}
+				break selectionLoop
+			}
 		}
 		
 		// If any null node exists expand it otherwise choose the one with best uct score
@@ -74,13 +81,8 @@ selectionLoop:
 }
 
 func newNode(parent *MonteCarloNode, board *dragontoothmg.Board) *MonteCarloNode {
-	moves := board.GenerateLegalMoves()
-	children := make([]*MonteCarloNode, len(moves), len(moves))
-
 	return &MonteCarloNode{
 		Parent:   parent,
-		Children: children,
-		Moves:    moves,
 	}
 }
 

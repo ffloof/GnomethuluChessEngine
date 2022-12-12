@@ -10,7 +10,7 @@ import (
 
 func TestMCTS(t *testing.T){
 	searcher := search.NewSearch(policy.UCT, traditional.CustomV1)
-	searcher.SetPosition(dragontoothmg.ParseFen("8/8/2q5/8/8/2k5/8/1K6 b - - 1 1"))
+	searcher.SetPosition(dragontoothmg.ParseFen("r1bqkb1r/ppp1pppp/2n2n2/3p4/3P1B2/2N5/PPP1PPPP/R2QKBNR w KQkq - 4 4"))
 
 	searcher.RunIterations(500000)
 	t.Log(searcher.Head.Visits)
