@@ -90,8 +90,17 @@ selectionLoop:
 }
 
 func newNode(parent *MonteCarloNode, board *dragontoothmg.Board) *MonteCarloNode {
-	return &MonteCarloNode{
-		Parent:   parent,
+	if parent != nil {
+		return &MonteCarloNode{
+			Parent:   parent,
+		}
+	} else {
+		moves := board.GenerateLegalMoves()
+		return &MonteCarloNode{
+			Parent: parent,
+			Moves: moves,
+			Children: make([]*MonteCarloNode, len(moves), len(moves)),
+		}
 	}
 }
 
