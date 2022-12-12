@@ -133,6 +133,7 @@ type MonteCarloTreeSearcher struct {
 	treeFunc func(*dragontoothmg.Board, dragontoothmg.Move) float64 //TODO: convert boards to *board
 	evalFunc func(*dragontoothmg.Board) float64
 	PolicyExplore float64
+	EmptyVisits float64
 }
 
 func (mcts *MonteCarloTreeSearcher) PlayingWhite() bool {
