@@ -25,9 +25,9 @@ selectionLoop:
 		}
 
 		if len(node.Moves) == 0 {
-			if !node.FullyExpanded {
+			if !node.Expanded {
+				node.Expanded = true
 				node.Moves = board.GenerateLegalMoves()
-				node.Children = make([]*MonteCarloNode, len(node.Moves), len(node.Moves))
 			}
 
 			if len(node.Moves) == 0 {
@@ -41,33 +41,24 @@ selectionLoop:
 		}
 		
 		// If any null node exists expand it otherwise choose the one with best uct score
-		if !node.FullyExpanded {
-			nowFull := true
-			for i := range node.Children {
-				if node.Children[i] == nil {
-					// 2. Expansion and Evaluation
-					board.Apply(node.Moves[i])
+		if len(node.Children) != len(node.Moves) {
+			i := len(node.Children)
+			
+			// 2. Expansion and Evaluation
+			board.Apply(node.Moves[i])
 
-					nextNode := newNode(node, board)
-					node.Children[i] = nextNode
+			node.Children = append(node.Children, newNode(node, board))
 
-					node = nextNode
-					evaluation = mcts.evalFunc(board)
-					nowFull = false
-					break selectionLoop
-				}
-			}
-
-			if nowFull {
-				node.FullyExpanded = true
-			}
+			node = &node.Children[i]
+			evaluation = mcts.evalFunc(board)
+			break selectionLoop
 		}
 
 		bestChildIndex := 0
 		bestScore := -1.0
 		parentConstant := mcts.PolicyExplore * math.Log(node.Visits)
-		for i, child := range node.Children {
-			//score := mcts.treeFunc(parentConstant, child, board, node.Moves[i])
+		for i := range node.Moves {
+			child := &node.Children[i]
 			score := (-child.Value / child.Visits) + (mcts.treeFunc(board, node.Moves[i]) * math.Sqrt(parentConstant/child.Visits))
 			if score > bestScore {
 				bestScore = score
@@ -76,7 +67,7 @@ selectionLoop:
 		}
 
 		board.Apply(node.Moves[bestChildIndex])
-		node = node.Children[bestChildIndex]
+		node = &node.Children[bestChildIndex]
 	}
 
 	// 3. Backpropogation
@@ -89,36 +80,36 @@ selectionLoop:
 	}
 }
 
-func newNode(parent *MonteCarloNode, board *dragontoothmg.Board) *MonteCarloNode {
+func newNode(parent *MonteCarloNode, board *dragontoothmg.Board) MonteCarloNode {
 	if parent != nil {
-		return &MonteCarloNode{
+		return MonteCarloNode{
 			Parent:   parent,
 		}
 	} else {
-		moves := board.GenerateLegalMoves()
-		return &MonteCarloNode{
+		return MonteCarloNode{
 			Parent: parent,
-			Moves: moves,
-			Children: make([]*MonteCarloNode, len(moves), len(moves)),
+			Moves: board.GenerateLegalMoves(),
+			Children: []MonteCarloNode{},
 		}
 	}
 }
 
 type MonteCarloNode struct { //TODO: look into if we can garbage collect some nodes or at least node.Moves
 	Parent   *MonteCarloNode
-	Children []*MonteCarloNode //TODO: try to mitigate pointer chasing
+	Children []MonteCarloNode //TODO: try to mitigate pointer chasing
 	Moves    []dragontoothmg.Move
 	Value    float64
 	Visits   float64
-	FullyExpanded bool
+	Expanded bool
 }
 
 func NewSearch(tree func(*dragontoothmg.Board, dragontoothmg.Move) float64, eval func(*dragontoothmg.Board) float64) MonteCarloTreeSearcher {
 	board := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+	freshHead := newNode(nil, &board)
 
 	mcts := MonteCarloTreeSearcher{
 		startPos: board,
-		Head:     newNode(nil, &board),
+		Head:     &freshHead,
 		treeFunc: tree,
 		evalFunc: eval,
 		PolicyExplore: 3.0,
@@ -130,12 +121,14 @@ func NewSearch(tree func(*dragontoothmg.Board, dragontoothmg.Move) float64, eval
 // So MateAdjust() will return the eval backpropogate to correct this difference and remove all other branches from parent node
 // This helps the algorithm find mates exponentially faster than it otherwise would
 func MateAdjust(node *MonteCarloNode) float64 {
-	for i, child := range node.Parent.Children {
+	for i := range node.Parent.Children {
+		child := &node.Parent.Children[i]
 		if node == child {
 			// Make the mate the only possible node
 			move := node.Parent.Moves[i]
-			node.Parent.Children = []*MonteCarloNode{node}
+			node.Parent.Children = []MonteCarloNode{*node}
 			node.Parent.Moves = []dragontoothmg.Move{move}
+			break
 
 			// The value of the parent should be equal to visits since it has won the game
 			// So backpropogation will propogate node.Parent.Visits - node.Parent.Value to correct the value up the tree

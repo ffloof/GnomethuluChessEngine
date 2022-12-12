@@ -42,20 +42,22 @@ func (mcts *MonteCarloTreeSearcher) PrintInfo() {
 
 
 func (mcts *MonteCarloTreeSearcher) SetPosition(nextState dragontoothmg.Board){
-	for i, move := range mcts.Head.Moves {
+	for i := range mcts.Head.Children {
+		move := mcts.Head.Moves[i] 
 		testBoard := mcts.startPos
 		testBoard.Apply(move)
-		if nextState == testBoard && mcts.Head.Children[i] != nil {
+		if nextState == testBoard {
 			// Can use information from pondering / previous move analysis
 			mcts.startPos = nextState
-			mcts.Head = mcts.Head.Children[i]
+			mcts.Head = &mcts.Head.Children[i]
 			mcts.Head.Parent = nil
 			return
 		}
 	}
 
 	mcts.startPos = nextState
-	mcts.Head = newNode(nil, &mcts.startPos)
+	freshHead := newNode(nil, &mcts.startPos)
+	mcts.Head = &freshHead
 }
 
 
@@ -70,7 +72,7 @@ const MAXNODES = 2000000
 func (mcts *MonteCarloTreeSearcher) runTime(seconds float64, stopSignal chan bool) bool {
 	start := time.Now()
 	for true {
-		mcts.RunIterations(1000)
+		mcts.RunIterations(10000)
 		mcts.PrintInfo()
 		elapsed := time.Since(start)
 		
@@ -133,6 +135,7 @@ type MonteCarloTreeSearcher struct {
 	treeFunc func(*dragontoothmg.Board, dragontoothmg.Move) float64 //TODO: convert boards to *board
 	evalFunc func(*dragontoothmg.Board) float64
 	PolicyExplore float64
+	Threads int
 }
 
 func (mcts *MonteCarloTreeSearcher) PlayingWhite() bool {

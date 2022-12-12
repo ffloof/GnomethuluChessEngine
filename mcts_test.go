@@ -38,12 +38,9 @@ func TestMCTS2(t *testing.T){
 }
 
 func PrettyPrintMoves(explore *search.MonteCarloNode, t *testing.T){
-	for i, child := range explore.Children {
-		if child == nil {
-			t.Log(i, explore.Moves[i].String(), 0)
-		} else {
-			average := -child.Value/child.Visits
-			t.Log(i, explore.Moves[i].String(), child.Visits, "mean", average)
-		}
+	for i := range explore.Children {
+		child := &explore.Children[i]
+		average := -child.Value/child.Visits
+		t.Log(i, explore.Moves[i].String(), child.Visits, "mean", average)
 	}
 }
