@@ -6,6 +6,7 @@ import (
 	"sort"
 	"fmt"
 	"math"
+	"os"
 )
 
 func inverseSigmoid(n float64) float64 {
@@ -29,17 +30,16 @@ func (mcts *MonteCarloTreeSearcher) PrintInfo() {
 		return moveMap[keys[i]] > moveMap[keys[j]]
 	})
 
+	fmt.Println("info nodes", int(mcts.Head.Visits))
 	for i, key := range keys {
 		if i + 1 > 3 {
 			break
 		}
 		move := key.String()
 		eval := moveMap[key]
-		fmt.Println("info nodes", int(mcts.Head.Visits) ,"multipv", i+1 ,"score cp", int(inverseSigmoid(eval)), "pv", move)
+		fmt.Println("info", "multipv", i+1 ,"score cp", int(inverseSigmoid(eval)), "pv", move)
 	}
 }
-
-
 
 func (mcts *MonteCarloTreeSearcher) SetPosition(nextState dragontoothmg.Board){
 	for i := range mcts.Head.Children {
@@ -127,19 +127,12 @@ func (mcts *MonteCarloTreeSearcher) TimeManager(bank float64, increment float64,
 	}
 }
 
-
-
 type MonteCarloTreeSearcher struct {
 	startPos dragontoothmg.Board
 	Head     *MonteCarloNode
 	treeFunc func(*dragontoothmg.Board, dragontoothmg.Move) float64 //TODO: convert boards to *board
 	evalFunc func(*dragontoothmg.Board) float64
 	PolicyExplore float64
-	Threads int
-}
-
-func (mcts *MonteCarloTreeSearcher) PlayingWhite() bool {
-	return mcts.startPos.Wtomove
 }
 
 func (mcts *MonteCarloTreeSearcher) GetBestMove() dragontoothmg.Move {

@@ -1,9 +1,13 @@
 ## TODO:
 
+#### Small Things:
+    - Remove non queen promotions from movegen code (its so rare it isnt worth wasting computational power on exploring an extreme edge case)
+    - Copy over tournament code from MVVLVA branch
+    - Work on enabling move ordering in main branch
+
 #### Books
  - End Sygzygygyygygy book
  - Customizeable opening book format
- - Create mate search system, garbage collect nodes
 
 #### Improve time manager
  - Make engine auto play a move if its clearly the best move by a wide margin by n nodes
@@ -21,18 +25,4 @@
  - Traditional Policy
  - Self play policy and eval
  - Time management?
-
-#### Other
- - Benchmark comparison with direct storage of nodes as opposed to pointers
-
-
-## NN structure
-    - Train it on quiet or semi quiet positions, completely random positions have too many tactics that are hard to capture in a NN
-    - Layers :
-        empty? experiment with giving it an empty as a value
-        pawn   
-        knight
-        bishop (queen represented as bishop and rook)
-        rook
-        knight
-        moving color
+ - Texel Tuning? Contempt?

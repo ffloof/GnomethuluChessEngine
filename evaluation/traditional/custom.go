@@ -11,7 +11,7 @@ var earlyPawnTable [64]int = reverse(82, [64]int{
 	 -6,   7,  26,  31,  65,  56, 25, -20,
 	-14,  13,  10,  21,  23,  12, 17, -23,
 	-30,  -2,   5,  12,  17,   6, -5, -30,
-	-29,  -4,  -4, -14, -10,   3, 33, -12,
+	-29,  -4,  -4,  -7,  -3,   3, 33, -12,
 	-35,  -1, -15, -25, -30,  24, 38, -10,
 	  0,   0,   0,   0,   0,   0,  0,   0,
 })
@@ -55,9 +55,9 @@ var earlyBishopTable [64]int = reverse(365, [64]int{
 	-16,  37,  43,  40,  35,  50,  37,  -2,
 	 -4,   9,  19,  20,  22,  37,   5,  -2,
 	 -6,  13,  18,  30,  34,  20,  10,  -4,
-	  0,  12,  15,   4,  -5,  27,  12,  10,
-	  4,  15,  16,   1,   7,  21,  33,   1,
-	-33,  -3, -14, -21, -13, -15, -39, -21,
+	  0,  12,  15,  -5, -10,  27,  12,  10,
+	  4,  15,  16,   8,  12,  21,  33,   1,
+	-33,  -3, -19, -21, -13, -20, -39, -21,
 })
 
 var lateBishopTable [64]int = reverse(297,[64]int{
@@ -205,6 +205,82 @@ func CustomV1(board *dragontoothmg.Board) float64 {
 
 	if !board.Wtomove {
 		eval = -eval
+	}
+
+	return SigmoidLike(eval)
+}
+
+func CustomV2(board *dragontoothmg.Board) float64 {
+	phase := 0
+	midScore := 0
+	endScore := 0
+
+	for i := 0; i < 64; i++ {
+		if board.White.All>>i%2 == 1 {
+			if board.White.Pawns>>i%2 == 1 {
+				midScore += earlyPawnTable[i]
+				endScore += latePawnTable[i]
+			} else if board.White.Knights>>i%2 == 1 {
+				midScore += earlyKnightTable[i]
+				endScore += lateKnightTable[i]
+				phase += 1
+			} else if board.White.Bishops>>i%2 == 1 {
+				midScore += earlyBishopTable[i]
+				endScore += lateBishopTable[i]
+				phase += 1
+			} else if board.White.Rooks>>i%2 == 1 {
+				midScore += earlyRookTable[i]
+				endScore += lateRookTable[i]
+				phase += 2
+			} else if board.White.Queens>>i%2 == 1 {
+				midScore += earlyQueenTable[i]
+				endScore += lateQueenTable[i]
+				phase += 4
+			} else if board.White.Kings>>i%2 == 1{
+				midScore += earlyKingTable[i]
+				endScore += lateKingTable[i]
+			}
+		} else if board.Black.All>>i%2 == 1 {
+			j := i ^ 56
+			if board.Black.Pawns>>i%2 == 1 {
+				midScore -= earlyPawnTable[j]
+				endScore -= latePawnTable[j]
+			} else if board.Black.Knights>>i%2 == 1 {
+				midScore -= earlyKnightTable[j]
+				endScore -= lateKnightTable[j]
+				phase += 1
+			} else if board.Black.Bishops>>i%2 == 1 {
+				midScore -= earlyBishopTable[j]
+				endScore -= lateBishopTable[j]
+				phase += 1
+			} else if board.Black.Rooks>>i%2 == 1 {
+				midScore -= earlyRookTable[j]
+				endScore -= lateRookTable[j]
+				phase += 2
+			} else if board.Black.Queens>>i%2 == 1 {
+				midScore -= earlyQueenTable[j]
+				endScore -= lateQueenTable[j]
+				phase += 4
+			} else if board.Black.Kings>>i%2 == 1{
+				midScore -= earlyKingTable[j]
+				endScore -= lateKingTable[j]
+			}
+		}
+	}
+
+
+	if phase > 24 {
+		phase = 24
+	}
+
+	eval := float64((midScore * phase) + (endScore * (24-phase)))/24/100 
+
+	if !board.Wtomove {
+		eval = -eval
+		// An idea taken from stockfish called "contempt"
+		// It tries to encourage simplifying positions while ahead in material and avoiding simplifications when behind
+		const discontempt float64 = 0.2
+		eval *= 1 + (discontempt * float64(24 - phase) / 24)
 	}
 
 	return SigmoidLike(eval)

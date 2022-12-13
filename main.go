@@ -8,6 +8,6 @@ import (
 )
 
 func main() {	
-	uci.Init(policy.UCT, traditional.CustomV1)
+	uci.Init(policy.UCT, traditional.CustomV2)
 }
 

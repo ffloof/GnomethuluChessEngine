@@ -112,7 +112,7 @@ func NewSearch(tree func(*dragontoothmg.Board, dragontoothmg.Move) float64, eval
 		Head:     &freshHead,
 		treeFunc: tree,
 		evalFunc: eval,
-		PolicyExplore: 3.0,
+		PolicyExplore: 0.7,
 	}
 	return mcts
 }
