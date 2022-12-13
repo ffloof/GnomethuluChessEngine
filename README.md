@@ -4,6 +4,7 @@
     - Remove non queen promotions from movegen code (its so rare it isnt worth wasting computational power on exploring an extreme edge case)
     - Copy over tournament code from MVVLVA branch
     - Work on enabling move ordering in main branch
+    - Make set position work on 2 plys
 
 #### Books
  - End Sygzygygyygygy book
@@ -12,8 +13,7 @@
 #### Improve time manager
  - Make engine auto play a move if its clearly the best move by a wide margin by n nodes
  - Factor in other players time into time to move
- - Play with reaching a node target
- - Make engine not choose moves only considered last minute (minimum % of recent nodes?)
+ - Make engine not choose moves only considered last minute (minimum % of nodes?)
 
 #### Engine options
  - Add options for amount of threads to use

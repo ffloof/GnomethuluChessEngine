@@ -5,6 +5,32 @@ import (
 	"math"
 )
 
+type MonteCarloNode struct { //TODO: look into if we can garbage collect some nodes or at least node.Moves
+	Parent   *MonteCarloNode
+	Children []MonteCarloNode
+	Moves    []dragontoothmg.Move
+	Value    float64
+	Visits   float64
+	Expanded bool
+}
+
+func newNode(parent *MonteCarloNode, board *dragontoothmg.Board) MonteCarloNode {
+	if parent != nil {
+		return MonteCarloNode{
+			Parent:   parent,
+		}
+	} else {
+		return MonteCarloNode{
+			Parent: parent,
+			Moves: board.GenerateLegalMoves(),
+			Children: []MonteCarloNode{},
+		}
+	}
+}
+
+
+
+// Main search functionality here
 func (mcts *MonteCarloTreeSearcher) iteration() {
 	history := map[uint64]bool{}
 
@@ -80,42 +106,7 @@ selectionLoop:
 	}
 }
 
-func newNode(parent *MonteCarloNode, board *dragontoothmg.Board) MonteCarloNode {
-	if parent != nil {
-		return MonteCarloNode{
-			Parent:   parent,
-		}
-	} else {
-		return MonteCarloNode{
-			Parent: parent,
-			Moves: board.GenerateLegalMoves(),
-			Children: []MonteCarloNode{},
-		}
-	}
-}
 
-type MonteCarloNode struct { //TODO: look into if we can garbage collect some nodes or at least node.Moves
-	Parent   *MonteCarloNode
-	Children []MonteCarloNode
-	Moves    []dragontoothmg.Move
-	Value    float64
-	Visits   float64
-	Expanded bool
-}
-
-func NewSearch(tree func(*dragontoothmg.Board, dragontoothmg.Move) float64, eval func(*dragontoothmg.Board) float64) MonteCarloTreeSearcher {
-	board := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-	freshHead := newNode(nil, &board)
-
-	mcts := MonteCarloTreeSearcher{
-		startPos: board,
-		Head:     &freshHead,
-		treeFunc: tree,
-		evalFunc: eval,
-		PolicyExplore: 0.7,
-	}
-	return mcts
-}
 
 // When a mate in 1 since it is a terminal state win any previously explored branches of the parent are irrelevant, since it will always opt for mate in 1
 // So MateAdjust() will return the eval backpropogate to correct this difference and remove all other branches from parent node
