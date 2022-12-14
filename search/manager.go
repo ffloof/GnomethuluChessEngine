@@ -16,18 +16,17 @@ type MonteCarloTreeSearcher struct {
 	PolicyExplore float64
 }
 
-func NewSearch(tree func(*dragontoothmg.Board, dragontoothmg.Move) float64, eval func(*dragontoothmg.Board) float64) MonteCarloTreeSearcher {
+func NewSearch(tree func(*dragontoothmg.Board, dragontoothmg.Move) float64, eval func(*dragontoothmg.Board) float64) *MonteCarloTreeSearcher {
 	board := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 	freshHead := newNode(nil, &board)
 
-	mcts := MonteCarloTreeSearcher{
+	return &MonteCarloTreeSearcher{
 		startPos: board,
 		Head:     &freshHead,
 		treeFunc: tree,
 		evalFunc: eval,
 		PolicyExplore: 0.7,
 	}
-	return mcts
 }
 
 func (mcts *MonteCarloTreeSearcher) GetBestMove() dragontoothmg.Move {
