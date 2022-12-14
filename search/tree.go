@@ -11,6 +11,7 @@ type MonteCarloNode struct { //TODO: look into if we can garbage collect some no
 	Moves    []dragontoothmg.Move
 	Value    float64
 	Visits   float64
+	Threats *[64]int8
 	Expanded bool
 }
 
@@ -50,6 +51,10 @@ selectionLoop:
 			history[board.Hash()] = true
 		}
 
+		if node.Threats == nil {
+			node.Threats = ControlMap(board)
+		}
+
 		if len(node.Moves) == 0 {
 			if !node.Expanded {
 				node.Expanded = true
@@ -65,6 +70,8 @@ selectionLoop:
 				break selectionLoop
 			}
 		}
+
+		//TODO: something might be going wrong because it reaches this point without being expanded
 		
 		// If any null node exists expand it otherwise choose the one with best uct score
 		if len(node.Children) != len(node.Moves) {
@@ -83,9 +90,10 @@ selectionLoop:
 		bestChildIndex := 0
 		bestScore := -1.0
 		parentConstant := mcts.PolicyExplore * math.Log(node.Visits)
+
 		for i := range node.Moves {
 			child := &node.Children[i]
-			score := (-child.Value / child.Visits) + (mcts.treeFunc(board, node.Moves[i]) * math.Sqrt(parentConstant/child.Visits))
+			score := (-child.Value / child.Visits) + (mcts.treeFunc(board, node.Moves[i], node.Threats) * math.Sqrt(parentConstant/child.Visits))
 			if score > bestScore {
 				bestScore = score
 				bestChildIndex = i

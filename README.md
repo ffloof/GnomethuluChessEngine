@@ -2,7 +2,6 @@
 
 #### Small Things:
     - Remove non queen promotions from movegen code (its so rare it isnt worth wasting computational power on exploring an extreme edge case)
-    - Copy over tournament code from MVVLVA branch
     - Work on enabling move ordering in main branch
         - MVVLVA, but also try promotions and advanced pawn moves early (especially in endgames)
     - Make set position work on 2 plys

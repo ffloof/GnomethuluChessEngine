@@ -11,12 +11,12 @@ import (
 type MonteCarloTreeSearcher struct {
 	startPos dragontoothmg.Board
 	Head     *MonteCarloNode
-	treeFunc func(*dragontoothmg.Board, dragontoothmg.Move) float64 //TODO: convert boards to *board
+	treeFunc func(*dragontoothmg.Board, dragontoothmg.Move, *[64]int8) float64 //TODO: convert boards to *board
 	evalFunc func(*dragontoothmg.Board) float64
 	PolicyExplore float64
 }
 
-func NewSearch(tree func(*dragontoothmg.Board, dragontoothmg.Move) float64, eval func(*dragontoothmg.Board) float64) *MonteCarloTreeSearcher {
+func NewSearch(tree func(*dragontoothmg.Board, dragontoothmg.Move, *[64]int8) float64, eval func(*dragontoothmg.Board) float64) *MonteCarloTreeSearcher {
 	board := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 	freshHead := newNode(nil, &board)
 

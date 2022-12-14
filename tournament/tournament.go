@@ -1,4 +1,4 @@
-package main
+package tournament
 
 import (
 	"fmt"
@@ -26,23 +26,24 @@ var openings = map[string]string{
 	"rnbqk2r/pppp1ppp/4pn2/8/1bPP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 3 4": "Nimzo Indian",
 }
 
-func main(){
-	RunTournament(
-		search.NewSearch(policy.UCT, traditional.CustomV1),
+
+func Run(){
+	runTournament(
 		search.NewSearch(policy.UCT, traditional.CustomV2),
+		search.NewSearch(policy.HeurUCT, traditional.CustomV2),
 	)
 }
 
-func RunTournament(searcher1, searcher2 *search.MonteCarloTreeSearcher){
+func runTournament(searcher1, searcher2 *search.MonteCarloTreeSearcher){
 	scoreline := 0.0
 	for fen, name := range openings {
-		scoreline += PlayRound(searcher1, searcher2, fen)
-		scoreline -= PlayRound(searcher2, searcher1, fen)
+		scoreline += playRound(searcher1, searcher2, fen)
+		scoreline -= playRound(searcher2, searcher1, fen)
 		fmt.Println(name, scoreline)
 	}
 }
 
-func PlayRound(whitePlayer, blackPlayer *search.MonteCarloTreeSearcher, startFen string) float64 {
+func playRound(whitePlayer, blackPlayer *search.MonteCarloTreeSearcher, startFen string) float64 {
 	position := dragontoothmg.ParseFen(startFen)
 	maxmoves := 200
 	for {

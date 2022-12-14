@@ -11,7 +11,7 @@ import (
 )
 
 //TODO: replace all these nasty long func expressions with custom types
-func Init(treeFunc func(*dragontoothmg.Board, dragontoothmg.Move) float64, evalFunc func(*dragontoothmg.Board) float64){
+func Init(treeFunc func(*dragontoothmg.Board, dragontoothmg.Move, *[64]int8) float64, evalFunc func(*dragontoothmg.Board) float64){
 	reader := bufio.NewReader(os.Stdin)
 
 	searcher := search.NewSearch(treeFunc, evalFunc)

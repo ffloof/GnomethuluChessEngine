@@ -10,6 +10,14 @@ github.com/ffloof/dragontoothmg v0.0.0-20221212134929-8221741a468e h1:XIQUveNGND
 github.com/ffloof/dragontoothmg v0.0.0-20221212134929-8221741a468e/go.mod h1:kYQKVZKColL3Ptx7wv7vdv/b0x2LUTI68UiUZwRcMGs=
 github.com/ffloof/dragontoothmg v0.0.0-20221212135758-5a5f2055d10d h1:a9o7/fFgdhclowMFo8XXSQWgiD3/0Erx+8Om/lmn4H8=
 github.com/ffloof/dragontoothmg v0.0.0-20221212135758-5a5f2055d10d/go.mod h1:kYQKVZKColL3Ptx7wv7vdv/b0x2LUTI68UiUZwRcMGs=
+github.com/ffloof/dragontoothmg v0.0.0-20221214185232-c03dda696a17 h1:bWPNpVOE3jNQTavCy5NKjf9+hUf1bfYGU9zDaumumY8=
+github.com/ffloof/dragontoothmg v0.0.0-20221214185232-c03dda696a17/go.mod h1:kYQKVZKColL3Ptx7wv7vdv/b0x2LUTI68UiUZwRcMGs=
+github.com/ffloof/dragontoothmg v0.0.0-20221214190426-f02f360092ce h1:McuCP3+aLmq0xI9hXpB8yZMmq+g9uh9LVAP5JefNt8c=
+github.com/ffloof/dragontoothmg v0.0.0-20221214190426-f02f360092ce/go.mod h1:kYQKVZKColL3Ptx7wv7vdv/b0x2LUTI68UiUZwRcMGs=
+github.com/ffloof/dragontoothmg v0.0.0-20221214191653-ccfb88885198 h1:MKyUJGBcHvP3/qCD0xKy0pmccW8bl47hFmiEUszmpCU=
+github.com/ffloof/dragontoothmg v0.0.0-20221214191653-ccfb88885198/go.mod h1:kYQKVZKColL3Ptx7wv7vdv/b0x2LUTI68UiUZwRcMGs=
+github.com/ffloof/dragontoothmg v0.0.0-20221214192007-d3b287146337 h1:6ClJXtlmfgW3DPLxI/cq/mizaFucLyQB8xV9N7F9Pqg=
+github.com/ffloof/dragontoothmg v0.0.0-20221214192007-d3b287146337/go.mod h1:kYQKVZKColL3Ptx7wv7vdv/b0x2LUTI68UiUZwRcMGs=
 github.com/galeone/tensorflow/tensorflow/go v0.0.0-20221023090153-6b7fa0680c3e h1:9+2AEFZymTi25FIIcDwuzcOPH04z9+fV6XeLiGORPDI=
 github.com/galeone/tensorflow/tensorflow/go v0.0.0-20221023090153-6b7fa0680c3e/go.mod h1:TelZuq26kz2jysARBwOrTv16629hyUsHmIoj54QqyFo=
 github.com/galeone/tfgo v0.0.0-20221023090852-d89a5c7e31e1 h1:fsU+Je1A2kNu7e1LUAyOUrzXk50/2yP1tFGqKyNkOsI=
