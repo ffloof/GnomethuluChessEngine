@@ -55,11 +55,11 @@ func playRound(whitePlayer, blackPlayer *search.MonteCarloTreeSearcher, startFen
 		var nextMove dragontoothmg.Move
 		if position.Wtomove {
 			whitePlayer.SetPosition(position)
-			whitePlayer.RunIterations(10000)
+			whitePlayer.RunIterations(20000)
 			nextMove = whitePlayer.GetBestMove()
 		} else {
 			blackPlayer.SetPosition(position)
-			blackPlayer.RunIterations(10000)
+			blackPlayer.RunIterations(20000)
 			nextMove = blackPlayer.GetBestMove()
 		}
 		position.Apply(nextMove)
