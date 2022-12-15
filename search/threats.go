@@ -1,6 +1,8 @@
 package search
 
 import (
+	"fmt"
+	"strconv"
 	"github.com/ffloof/dragontoothmg"
 )
 
@@ -20,4 +22,17 @@ func ControlMap(board *dragontoothmg.Board) *[64]int8 {
 	}
 
 	return &threats
+}
+
+func PrintControlMap(position *[64]int8){
+	for y := 7; y >= 0; y-- {
+		line := ""
+		for x := 0; x < 8; x++ {
+			if position[y*8+x] >= 0 {
+				line += " "
+			}
+			line += strconv.Itoa(int(position[y*8+x])) + " "
+		}
+		fmt.Println(line)
+	}
 }

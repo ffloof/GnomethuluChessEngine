@@ -29,8 +29,8 @@ var openings = map[string]string{
 
 func Run(){
 	runTournament(
-		search.NewSearch(policy.UCT, traditional.CustomV2),
 		search.NewSearch(policy.HeurUCT, traditional.CustomV2),
+		search.NewSearch(policy.UCT, traditional.CustomV2),
 	)
 }
 

@@ -32,12 +32,19 @@ var WinOdds = [6][6]float64{
 func HeurUCT(board *dragontoothmg.Board, move dragontoothmg.Move, threats *[64]int8) float64 {
 	aggresor, _ := dragontoothmg.GetPieceType(move.From(), board)
 	victim, _ := dragontoothmg.GetPieceType(move.To(), board)
+	//TODO: implement another factor "risk", essentially if the square the piece is standing on is in danger, we need to move
 
+	var odds float64
 	//TODO: implement castling bonus
-	if threats[move.To()] < 0 {
-		return LossOdds[aggresor - 1][victim]
+	if threats[move.To()] <= 0 {
+		odds = LossOdds[aggresor - 1][victim]
 	} else {
-		return WinOdds[aggresor - 1][victim]
+		odds = WinOdds[aggresor - 1][victim]
 	}
-	
+
+	odds *= 0.25
+	if threats[move.From()] < 0 {
+		odds *= 2.0
+	}
+	return odds
 }

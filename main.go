@@ -5,11 +5,12 @@ import (
 	"gnomethulu/policy"
 	"gnomethulu/uci"
 	//"gnomethulu/evaluation/neural"
-	"gnomethulu/tournament"
+	//"gnomethulu/tournament"
 )
 
-func main() {	
-	tournament.Run()
+func main() {
+	//tournament.Run()
 	uci.Init(policy.HeurUCT, traditional.CustomV2)
 }
+
 
