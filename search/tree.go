@@ -3,6 +3,7 @@ package search
 import (
 	"github.com/ffloof/dragontoothmg"
 	"math"
+	"fmt"
 )
 
 type MonteCarloNode struct { //TODO: look into if we can garbage collect some nodes or at least node.Moves
@@ -55,20 +56,24 @@ selectionLoop:
 			node.Threats = ControlMap(board)
 		}
 
-		if len(node.Moves) == 0 {
-			if !node.Expanded {
-				node.Expanded = true
-				node.Moves = board.GenerateLegalMoves()
-			}
+		if !node.Expanded {
+			node.Expanded = true
+			node.Moves = board.GenerateLegalMoves()
+		}
 
-			if len(node.Moves) == 0 {
-				if board.OurKingInCheck() {
-					evaluation = -MateAdjust(node)
-				} else {
-					evaluation = 0.0
-				}
-				break selectionLoop
+		if len(node.Moves) == 0 {
+			if board.OurKingInCheck() {
+				evaluation = -MateAdjust(node)
+			} else {
+				evaluation = 0.0
 			}
+			break selectionLoop
+		}
+		
+
+		if !node.Expanded {
+			fmt.Println(node)
+			panic("lll")
 		}
 
 		//TODO: something might be going wrong because it reaches this point without being expanded
