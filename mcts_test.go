@@ -26,11 +26,11 @@ func TestMCTS2(t *testing.T){
 	searcher := search.NewSearch(policy.HeurUCT, traditional.CustomV1)
 	searcher.SetPosition(dragontoothmg.ParseFen("4rk2/3QRppp/2p5/p1q5/P1P5/6pP/1P3PP1/4R1K1 b - - 0 29"))
 
-	searcher.RunIterations(200000)
+	searcher.RunIterations(500000)
 	t.Log(searcher.Head.Visits)
 
 	//c5f2, g1h1, f2e1, e7e1
-	explore := searcher.Head
+	explore := &searcher.Head.Children[12].Children[0].Children[12].Children[0]
 	PrettyPrintMoves(explore,t)
 
 	best := searcher.GetBestMove()

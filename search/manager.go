@@ -25,7 +25,7 @@ func NewSearch(tree func(*dragontoothmg.Board, dragontoothmg.Move, *[64]int8) fl
 		Head:     &freshHead,
 		treeFunc: tree,
 		evalFunc: eval,
-		PolicyExplore: 0.7,
+		PolicyExplore: 3.0,
 	}
 }
 

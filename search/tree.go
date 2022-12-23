@@ -3,10 +3,9 @@ package search
 import (
 	"github.com/ffloof/dragontoothmg"
 	"math"
-	"fmt"
 )
 
-type MonteCarloNode struct { //TODO: look into if we can garbage collect some nodes or at least node.Moves
+type MonteCarloNode struct {
 	Parent   *MonteCarloNode
 	Children []MonteCarloNode
 	Moves    []dragontoothmg.Move
@@ -24,7 +23,7 @@ func newNode(parent *MonteCarloNode, board *dragontoothmg.Board) MonteCarloNode 
 	} else {
 		return MonteCarloNode{
 			Parent: parent,
-			Moves: board.GenerateLegalMoves(),
+			//Moves: board.GenerateLegalMoves(),
 			Children: []MonteCarloNode{},
 		}
 	}
@@ -52,6 +51,7 @@ selectionLoop:
 			history[board.Hash()] = true
 		}
 
+		//TODO: probably merge threats and expansion unless we use them in eval
 		if node.Threats == nil {
 			node.Threats = ControlMap(board)
 		}
@@ -71,12 +71,6 @@ selectionLoop:
 		}
 		
 
-		if !node.Expanded {
-			fmt.Println(node)
-			panic("lll")
-		}
-
-		//TODO: something might be going wrong because it reaches this point without being expanded
 		
 		// If any null node exists expand it otherwise choose the one with best uct score
 		if len(node.Children) != len(node.Moves) {

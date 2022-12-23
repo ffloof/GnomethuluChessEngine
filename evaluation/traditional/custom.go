@@ -143,6 +143,13 @@ func CustomV1(board *dragontoothmg.Board) float64 {
 	midScore := 0
 	endScore := 0
 
+	if board.OurKingInCheck() { //TODO: make this mate adjust by passing in node, also lets us use threat maps
+		moves := board.GenerateLegalMoves()
+		if len(moves) == 0 {
+			return -1
+		}
+	}
+
 	for i := 0; i < 64; i++ {
 		if board.White.All>>i%2 == 1 {
 			if board.White.Pawns>>i%2 == 1 {
