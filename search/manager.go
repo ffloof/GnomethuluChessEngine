@@ -13,19 +13,19 @@ type MonteCarloTreeSearcher struct {
 	Head     *MonteCarloNode
 	treeFunc func(*dragontoothmg.Board, dragontoothmg.Move, *[64]int8) float64 //TODO: convert boards to *board
 	evalFunc func(*dragontoothmg.Board) float64
-	PolicyExplore float64
+	ExplorationParameter float64
 }
 
 func NewSearch(tree func(*dragontoothmg.Board, dragontoothmg.Move, *[64]int8) float64, eval func(*dragontoothmg.Board) float64) *MonteCarloTreeSearcher {
 	board := dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-	freshHead := newNode(nil)
+	freshHead := MonteCarloNode{}
 
 	return &MonteCarloTreeSearcher{
 		startPos: board,
 		Head:     &freshHead,
 		treeFunc: tree,
 		evalFunc: eval,
-		PolicyExplore: 2.0,
+		ExplorationParameter: 2.0, // Theoretically equal to 2.0
 	}
 }
 
@@ -59,7 +59,7 @@ func (mcts *MonteCarloTreeSearcher) SetPosition(nextState dragontoothmg.Board){
 	}
 
 	mcts.startPos = nextState
-	freshHead := newNode(nil)
+	freshHead := MonteCarloNode{}
 	mcts.Head = &freshHead
 }
 
@@ -137,7 +137,8 @@ func inverseSigmoid(n float64) float64 {
 
 func (mcts *MonteCarloTreeSearcher) PrintInfo() {
 	moveMap := map[dragontoothmg.Move]float64{}
-	for i, move := range mcts.Head.Moves {
+	for i := range mcts.Head.Children {
+		move := mcts.Head.Moves[i]
 		moveMap[move] = -mcts.Head.Children[i].Value / mcts.Head.Children[i].Visits
 	}
 

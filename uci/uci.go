@@ -43,21 +43,17 @@ func Init(treeFunc func(*dragontoothmg.Board, dragontoothmg.Move, *[64]int8) flo
 			case "ucinewgame":
 				searcher = search.NewSearch(treeFunc, evalFunc)
 			case "position":
-				//first word wont work cause fen contains spaces
-				
-				fenString := getStringBefore(arguments, "moves")				
-				if fenString == "" {
-					fenString = "startpos"
+
+				var board dragontoothmg.Board
+				if getFirstWord(arguments) == "fen" {
+					fenString := getStringBefore(getStringAfter(arguments, "fen"), "moves")
+					board = dragontoothmg.ParseFen(fenString)
+				} else { // Otherwise its the starting position
+					board = dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
 				}
 
 				moveStrings := strings.Split(strings.TrimSpace(getStringAfter(arguments, "moves")), " ")
 				
-				var board dragontoothmg.Board
-				if fenString != "startpos" {
-					board = dragontoothmg.ParseFen(fenString)
-				} else {
-					board = dragontoothmg.ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-				}
 				for _, movestr := range moveStrings {
 					if movestr != "" {
 						move, err := dragontoothmg.ParseMove(movestr)

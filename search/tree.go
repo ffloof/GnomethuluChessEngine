@@ -15,20 +15,6 @@ type MonteCarloNode struct {
 	Expanded bool
 }
 
-func newNode(parent *MonteCarloNode) MonteCarloNode {
-	if parent != nil {
-		return MonteCarloNode{
-			Parent:   parent,
-		}
-	} else {
-		return MonteCarloNode{
-			Parent: parent,
-			Children: []MonteCarloNode{},
-		}
-	}
-}
-
-
 
 // Main search functionality here
 func (mcts *MonteCarloTreeSearcher) iteration() {
@@ -43,6 +29,8 @@ func (mcts *MonteCarloTreeSearcher) iteration() {
 
 selectionLoop:
 	for true {
+		history = history
+		
 		if history[board.Hash()] {
 			evaluation = 0.0
 			break selectionLoop
@@ -58,6 +46,7 @@ selectionLoop:
 		if !node.Expanded {
 			node.Expanded = true
 			node.Moves = board.GenerateLegalMoves()
+			node.Children = make([]MonteCarloNode, 0, len(node.Moves))
 		}
 
 		if len(node.Moves) == 0 {
@@ -71,13 +60,13 @@ selectionLoop:
 
 		bestChildIndex := 0
 		bestScore := -1.0
-		parentConstant := mcts.PolicyExplore * math.Log(node.Visits)
+		parentConstant := mcts.ExplorationParameter * math.Log(node.Visits)
 
 		for i := range node.Moves {
 			var score float64
 			if i >= len(node.Children) {
-				const discovery float64 = 100
-				score = mcts.treeFunc(board, node.Moves[i], node.Threats) * discovery
+				const discovery float64 = 0.5
+				score = mcts.treeFunc(board, node.Moves[i], node.Threats) * math.Sqrt(parentConstant/discovery)
 			} else {
 				child := &node.Children[i]
 				score = (-child.Value / child.Visits) + (mcts.treeFunc(board, node.Moves[i], node.Threats) * math.Sqrt(parentConstant/child.Visits))
@@ -93,8 +82,9 @@ selectionLoop:
 		
 		j := len(node.Children)
 		if bestChildIndex >= j {
-			node.Children = append(node.Children, newNode(node))
+			node.Children = append(node.Children, MonteCarloNode{Parent: node})
 			node.Moves[bestChildIndex], node.Moves[j] = node.Moves[j], node.Moves[bestChildIndex]
+
 			node = &node.Children[j]
 			evaluation = mcts.evalFunc(board)
 
