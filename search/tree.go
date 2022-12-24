@@ -15,7 +15,7 @@ type MonteCarloNode struct {
 	Expanded bool
 }
 
-func newNode(parent *MonteCarloNode, board *dragontoothmg.Board) MonteCarloNode {
+func newNode(parent *MonteCarloNode) MonteCarloNode {
 	if parent != nil {
 		return MonteCarloNode{
 			Parent:   parent,
@@ -23,7 +23,6 @@ func newNode(parent *MonteCarloNode, board *dragontoothmg.Board) MonteCarloNode 
 	} else {
 		return MonteCarloNode{
 			Parent: parent,
-			//Moves: board.GenerateLegalMoves(),
 			Children: []MonteCarloNode{},
 		}
 	}
@@ -69,30 +68,21 @@ selectionLoop:
 			}
 			break selectionLoop
 		}
-		
-
-		
-		// If any null node exists expand it otherwise choose the one with best uct score
-		if len(node.Children) != len(node.Moves) {
-			i := len(node.Children)
-			
-			// 2. Expansion and Evaluation
-			board.Apply(node.Moves[i])
-
-			node.Children = append(node.Children, newNode(node, board))
-
-			node = &node.Children[i]
-			evaluation = mcts.evalFunc(board)
-			break selectionLoop
-		}
 
 		bestChildIndex := 0
 		bestScore := -1.0
 		parentConstant := mcts.PolicyExplore * math.Log(node.Visits)
 
 		for i := range node.Moves {
-			child := &node.Children[i]
-			score := (-child.Value / child.Visits) + (mcts.treeFunc(board, node.Moves[i], node.Threats) * math.Sqrt(parentConstant/child.Visits))
+			var score float64
+			if i >= len(node.Children) {
+				const discovery float64 = 100
+				score = mcts.treeFunc(board, node.Moves[i], node.Threats) * discovery
+			} else {
+				child := &node.Children[i]
+				score = (-child.Value / child.Visits) + (mcts.treeFunc(board, node.Moves[i], node.Threats) * math.Sqrt(parentConstant/child.Visits))
+			}
+			
 			if score > bestScore {
 				bestScore = score
 				bestChildIndex = i
@@ -100,7 +90,18 @@ selectionLoop:
 		}
 
 		board.Apply(node.Moves[bestChildIndex])
-		node = &node.Children[bestChildIndex]
+		
+		j := len(node.Children)
+		if bestChildIndex >= j {
+			node.Children = append(node.Children, newNode(node))
+			node.Moves[bestChildIndex], node.Moves[j] = node.Moves[j], node.Moves[bestChildIndex]
+			node = &node.Children[j]
+			evaluation = mcts.evalFunc(board)
+
+			break selectionLoop
+		} else {
+			node = &node.Children[bestChildIndex]
+		}
 	}
 
 	// 3. Backpropogation

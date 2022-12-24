@@ -30,7 +30,7 @@ func TestMCTS2(t *testing.T){
 	t.Log(searcher.Head.Visits)
 
 	//c5f2, g1h1, f2e1, e7e1
-	explore := &searcher.Head.Children[12].Children[0].Children[12].Children[0]
+	explore := searcher.Head
 	PrettyPrintMoves(explore,t)
 
 	best := searcher.GetBestMove()
@@ -41,6 +41,6 @@ func PrettyPrintMoves(explore *search.MonteCarloNode, t *testing.T){
 	for i := range explore.Children {
 		child := &explore.Children[i]
 		average := -child.Value/child.Visits
-		t.Log(i, explore.Moves[i].String(), child.Visits, "mean", average)
+		t.Log(i, explore.Moves[i].String(), "mean", average, "visits", child.Visits)
 	}
 }

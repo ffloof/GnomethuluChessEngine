@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 	"github.com/ffloof/dragontoothmg"
 	"gnomethulu/evaluation/traditional"
@@ -14,6 +13,7 @@ func TestEvaluation(t *testing.T){
 
 	startBoard.Apply(0)
 	for _, move := range startBoard.GenerateControlMoves() {
-		fmt.Println(move.String())
+		move = move
+		//fmt.Println(move.String())
 	}
 }
