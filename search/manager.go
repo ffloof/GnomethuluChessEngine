@@ -45,19 +45,6 @@ func (mcts *MonteCarloTreeSearcher) GetBestMove() dragontoothmg.Move {
 
 // TODO: get this to work for two plys as well
 func (mcts *MonteCarloTreeSearcher) SetPosition(nextState dragontoothmg.Board){
-	for i := range mcts.Head.Children {
-		move := mcts.Head.Moves[i]
-		testBoard := mcts.startPos
-		testBoard.Apply(move)
-		if nextState == testBoard {
-			// Can use information from pondering / previous move analysis
-			mcts.startPos = nextState
-			mcts.Head = &mcts.Head.Children[i]
-			mcts.Head.Parent = nil
-			return
-		}
-	}
-
 	mcts.startPos = nextState
 	freshHead := MonteCarloNode{}
 	mcts.Head = &freshHead

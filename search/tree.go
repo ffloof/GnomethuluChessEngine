@@ -46,7 +46,7 @@ selectionLoop:
 		if !node.Expanded {
 			node.Expanded = true
 			node.Moves = board.GenerateLegalMoves()
-			node.Children = make([]MonteCarloNode, 0, len(node.Moves))
+			node.Children = []MonteCarloNode{}
 		}
 
 		if len(node.Moves) == 0 {
@@ -81,6 +81,7 @@ selectionLoop:
 		board.Apply(node.Moves[bestChildIndex])
 		
 		j := len(node.Children)
+
 		if bestChildIndex >= j {
 			node.Children = append(node.Children, MonteCarloNode{Parent: node})
 			node.Moves[bestChildIndex], node.Moves[j] = node.Moves[j], node.Moves[bestChildIndex]
@@ -90,7 +91,11 @@ selectionLoop:
 
 			break selectionLoop
 		} else {
-			node = &node.Children[bestChildIndex]
+			nextNode := &node.Children[bestChildIndex]
+			if nextNode.Parent != node { // Should avoid slice reallocations breaking stuff
+				nextNode.Parent = node
+			}
+			node = nextNode
 		}
 	}
 
