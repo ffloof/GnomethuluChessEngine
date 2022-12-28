@@ -12,6 +12,7 @@ type MonteCarloNode struct {
 	Value    float64
 	Visits   float64
 	Threats *[64]int8
+	MinMax   float64
 	Expanded bool
 }
 
@@ -60,6 +61,7 @@ selectionLoop:
 
 		bestChildIndex := 0
 		bestScore := -1.0
+		bestMinMax := -1.0
 		parentConstant := mcts.ExplorationParameter * math.Log(node.Visits)
 
 		for i := range node.Moves {
@@ -70,6 +72,9 @@ selectionLoop:
 			} else {
 				child := &node.Children[i]
 				score = (-child.Value / child.Visits) + (mcts.treeFunc(board, node.Moves[i], node.Threats) * math.Sqrt(parentConstant/child.Visits))
+				if -child.MinMax > bestMinMax {
+					bestMinMax = -child.MinMax
+				}
 			}
 			
 			if score > bestScore {
@@ -78,16 +83,20 @@ selectionLoop:
 			}
 		}
 
+		if len(node.Children) != 0 {
+			node.MinMax = bestMinMax
+		}
+
 		board.Apply(node.Moves[bestChildIndex])
 		
 		j := len(node.Children)
 
 		if bestChildIndex >= j {
-			node.Children = append(node.Children, MonteCarloNode{Parent: node})
+			evaluation = mcts.evalFunc(board)
+			node.Children = append(node.Children, MonteCarloNode{Parent: node, Value:evaluation, Visits:1, MinMax:evaluation})
 			node.Moves[bestChildIndex], node.Moves[j] = node.Moves[j], node.Moves[bestChildIndex]
 
 			node = &node.Children[j]
-			evaluation = mcts.evalFunc(board)
 
 			break selectionLoop
 		} else {
@@ -101,11 +110,12 @@ selectionLoop:
 
 	// 3. Backpropogation
 
+	node = node.Parent
 	for node != nil {
-		node.Visits++
-		node.Value += evaluation
-		node = node.Parent
 		evaluation = -evaluation
+		node.Visits++
+		node.Value += (evaluation + node.MinMax) / 2
+		node = node.Parent
 	}
 }
 
