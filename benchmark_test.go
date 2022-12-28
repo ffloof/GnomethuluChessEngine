@@ -3,12 +3,17 @@ package main
 import (
 	_"fmt"
 	"testing"
+	"unsafe"
 	"time"
 	"gnomethulu/search"
 	"gnomethulu/evaluation/traditional"
 	"gnomethulu/policy"
 	"github.com/ffloof/dragontoothmg"
 )
+
+func TestStructSize(t *testing.T) {
+	t.Log("Node Size:", unsafe.Sizeof(search.MonteCarloNode{}))
+}
 
 func TestBenchmarks(t *testing.T){
 	t.Log("Start Game Positions")
@@ -29,3 +34,4 @@ func TestBenchmarks(t *testing.T){
 		t.Log(int(float64(iters)/time.Since(start).Seconds()), "nps" , iters, "nodes")
 	}
 }
+
