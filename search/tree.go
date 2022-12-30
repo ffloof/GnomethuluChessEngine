@@ -62,7 +62,7 @@ selectionLoop:
 		bestChildIndex := 0
 		bestScore := -1.0
 		bestMinMax := -1.0
-		parentConstant := mcts.ExplorationParameter * math.Log(node.Visits)
+		parentConstant := math.Log(node.Visits) // Exploration parameter is now factored into HeurUCT
 
 		for i := range node.Moves {
 			var score float64
@@ -71,7 +71,9 @@ selectionLoop:
 				score = mcts.treeFunc(board, node.Moves[i], node.Threats) * math.Sqrt(parentConstant/discovery)
 			} else {
 				child := &node.Children[i]
-				score = (-child.Value / child.Visits) + (mcts.treeFunc(board, node.Moves[i], node.Threats) * math.Sqrt(parentConstant/child.Visits))
+				average := -child.Value / child.Visits
+				score = average + (mcts.treeFunc(board, node.Moves[i], node.Threats) * math.Sqrt(parentConstant/child.Visits))
+
 				if -child.MinMax > bestMinMax {
 					bestMinMax = -child.MinMax
 				}
@@ -93,7 +95,7 @@ selectionLoop:
 
 		if bestChildIndex >= j {
 			evaluation = mcts.evalFunc(board)
-			node.Children = append(node.Children, MonteCarloNode{Parent: node, Value:evaluation, Visits:1, MinMax:evaluation})
+			node.Children = append(node.Children, MonteCarloNode{Parent: node, Value:evaluation, Visits:1, MinMax:clamp1(evaluation)})
 			node.Moves[bestChildIndex], node.Moves[j] = node.Moves[j], node.Moves[bestChildIndex]
 
 			node = &node.Children[j]
@@ -110,11 +112,25 @@ selectionLoop:
 
 	// 3. Backpropogation
 
+	eliminated := false
 	node = node.Parent
 	for node != nil {
 		evaluation = -evaluation
 		node.Visits++
-		node.Value += (evaluation + node.MinMax) / 2
+
+		if !eliminated {
+			if node.MinMax < evaluation {
+				node.MinMax = clamp1(evaluation)
+				node.Value += evaluation
+			} else {
+				eliminated = true
+				node.Value += (evaluation + node.MinMax) / 2
+			}
+		} else {
+			node.Value += (evaluation + node.MinMax) / 2
+		}
+
+		
 		node = node.Parent
 	}
 }
@@ -140,4 +156,13 @@ func MateAdjust(node *MonteCarloNode) float64 {
 		}
 	}
 	return node.Parent.Visits - node.Parent.Value
+}
+
+func clamp1(n float64) float64 {
+	if n > 1 {
+		return 1
+	} else if n < -1 {
+		return -1
+	}
+	return n
 }

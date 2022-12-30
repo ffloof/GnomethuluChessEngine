@@ -1,18 +1,13 @@
 ## TODO:
 
 #### Small Things:
-    - Remove non queen promotions from movegen code (its so rare it isnt worth wasting computational power on exploring an extreme edge case)
-    - Work on enabling move ordering in main branch
-        - MVVLVA, but also try promotions and advanced pawn moves early (especially in endgames)
-    - Make set position work on 2 plys
-    - If a position is extremely imbalanced ie one side is a rook and pawn up or more, skip positional checks and just return material
+    - Add castling, and pawn moves based on how far advanced to move ordering
 
 #### Books
  - End Sygzygygyygygy book
  - Customizeable opening book format
 
 #### Improve time manager
- - Make engine auto play a move if its clearly the best move by a wide margin by n nodes
  - Factor in other players time into time to move
  - Make engine not choose moves only considered last minute (minimum % of nodes?)
 
@@ -22,8 +17,17 @@
  - Add options for pondering on opponents time
 
 #### Machine learning
- - Traditional Eval
- - Traditional Policy
- - Self play policy and eval
+ - policy and eval
  - Time management?
- - Texel Tuning? Contempt?
+
+ #### Hand Crafted Evaluation Aspects
+    - Tapered evaluation using phase
+    - Contempt/simplification, when significantly ahead materially bonus is applied as phase decreases to encourage simplifying
+    - Common endgames, ie insufficient material, or simple king and rook / king and queen
+    - Control/Mobility, each square has a bonus associated with controlling it
+    - King Safety, based off control of squares adjacent to king, decreases with phase.
+    - Pawn structure
+        - Passed pawns bonus
+        - Isolated pawns bonus
+    - Piece square table, static bonuses to encourage certain locations as necessary last to tune
+    - Large penalty for if side moving's king is in check

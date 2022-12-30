@@ -13,7 +13,6 @@ type MonteCarloTreeSearcher struct {
 	Head     *MonteCarloNode
 	treeFunc func(*dragontoothmg.Board, dragontoothmg.Move, *[64]int8) float64 //TODO: convert boards to *board
 	evalFunc func(*dragontoothmg.Board) float64
-	ExplorationParameter float64
 }
 
 func NewSearch(tree func(*dragontoothmg.Board, dragontoothmg.Move, *[64]int8) float64, eval func(*dragontoothmg.Board) float64) *MonteCarloTreeSearcher {
@@ -25,7 +24,6 @@ func NewSearch(tree func(*dragontoothmg.Board, dragontoothmg.Move, *[64]int8) fl
 		Head:     &freshHead,
 		treeFunc: tree,
 		evalFunc: eval,
-		ExplorationParameter: 2.0, // Theoretically equal to 2.0
 	}
 }
 

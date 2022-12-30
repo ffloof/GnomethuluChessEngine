@@ -10,7 +10,7 @@ func (explore MonteCarloNode) Print() string {
 	for i := range explore.Children {
 		child := &explore.Children[i]
 		average := -child.Value/child.Visits
-		str += "\n" + fmt.Sprint(i, " ", explore.Moves[i].String(), " mean: ", round5(average), " visits: ", int(child.Visits))
+		str += "\n" + fmt.Sprint(i, " ", explore.Moves[i].String(), " mean: ", round5(average), " visits: ", int(child.Visits), " minmax: ", round5(-child.MinMax))
 	}
 	return str
 }

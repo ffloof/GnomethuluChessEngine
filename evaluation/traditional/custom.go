@@ -4,6 +4,9 @@ import (
 	"github.com/ffloof/dragontoothmg"
 )
 
+//TODO: Using bitboards its trivial to detect passed pawns
+// Something similar to passed pawns can be used to detect outposts
+
 // Tables for custom eval
 var earlyPawnTable [64]int = reverse(82, [64]int{
 	  0,   0,   0,   0,   0,   0,  0,   0,
@@ -275,13 +278,27 @@ func CustomV2(board *dragontoothmg.Board) float64 {
 
 	eval := float64((midScore * phase) + (endScore * (24-phase)))/24/100 
 
+	if board.OurKingInCheck() {
+		if board.Wtomove {
+			eval -= 1.5
+		} else {
+			eval += 1.5
+		}
+	}
+
+
 	if !board.Wtomove {
 		eval = -eval
-		// An idea taken from stockfish called "contempt"
-		// It tries to encourage simplifying positions while ahead in material and avoiding simplifications when behind
-		const discontempt float64 = 0.2
-		eval *= 1 + (discontempt * float64(24 - phase) / 24)
 	}
+
+	
+
+	
+	
+	// An idea taken from stockfish called "contempt"
+	// It tries to encourage simplifying positions while ahead in material and avoiding simplifications when behind
+	const discontempt float64 = 0.2
+	eval *= 1 + (discontempt * float64(24 - phase) / 24)
 
 	return SigmoidLike(eval)
 }
