@@ -2,6 +2,8 @@ package policy
 
 import (
 	"github.com/ffloof/dragontoothmg"
+	"gnomethulu/search"
+	"fmt"
 )
 
 func UCT(board *dragontoothmg.Board, move dragontoothmg.Move, threats *[64]int8) float64 {
@@ -17,7 +19,7 @@ var LossOdds = [5][6]float64{
 	{2.0, 2.1, 2.8, 2.8, 3.1, 3.8}, // Bishop takes Y
 	{1.8, 2.0, 2.5, 2.5, 2.8, 3.4}, // Rook takes Y
 	{1.7, 1.8, 2.1, 2.1, 2.4, 2.8}, // Queen takes Y
-	// King takes Y isnt possible as the piece is defended
+	// King takes Y isnt technically possible in as the piece is defended, 
 }
 
 var WinOdds = [6][6]float64{
@@ -37,6 +39,15 @@ func HeurUCT(board *dragontoothmg.Board, move dragontoothmg.Move, threats *[64]i
 	var odds float64
 	//TODO: implement castling bonus
 	if threats[move.To()] <= 0 {
+		if aggresor - 1 == 5 {
+			search.PrintControlMap(threats)
+			fmt.Println(board.ToFen(), move.String(), threats)
+			board.Wtomove = !board.Wtomove
+			for _, move := range board.GenerateControlMoves() {
+				fmt.Println(move.String())
+			}
+			board.Wtomove = !board.Wtomove
+		}
 		odds = LossOdds[aggresor - 1][victim]
 	} else {
 		odds = WinOdds[aggresor - 1][victim]

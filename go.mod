@@ -2,7 +2,7 @@ module gnomethulu
 
 go 1.17
 
-require github.com/ffloof/dragontoothmg v0.0.0-20221214192007-d3b287146337
+require github.com/ffloof/dragontoothmg v0.0.0-20221231161831-e6a3fac6532b
 
 require (
 	github.com/galeone/tensorflow/tensorflow/go v0.0.0-20221023090153-6b7fa0680c3e // indirect

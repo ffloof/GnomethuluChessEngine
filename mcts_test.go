@@ -14,8 +14,8 @@ func TestMCTS(t *testing.T){
 
 	searcher.RunIterations(500000)
 
-	explore := searcher.Head
-	t.Log(explore.Print())
+	//explore := searcher.Head
+	//t.Log(explore.Print())
 
 	best := searcher.GetBestMove()
 	t.Log(best.String())
@@ -27,9 +27,8 @@ func TestMCTS2(t *testing.T){
 
 	searcher.RunIterations(100000)
 
-	//c5f2, g1h1, f2e1, e7e1
-	explore := searcher.Head
-	t.Log(explore.Print())
+	//explore := searcher.Head
+	//t.Log(explore.Print())
 
 	best := searcher.GetBestMove()
 	t.Log(best.String())
@@ -43,9 +42,23 @@ func TestMCTS3(t *testing.T){
 
 	searcher.RunIterations(1000000)
 
+	//explore := searcher.Head
+	//t.Log(explore.Print())
+
+	best := searcher.GetBestMove()
+	t.Log(best.String())
+}
+
+func TestMCTS4(t *testing.T){
+	searcher := search.NewSearch(policy.HeurUCT, traditional.CustomV1)
+	searcher.SetPosition(dragontoothmg.ParseFen("Nnbk1b1r/pp1p1ppp/8/2p5/8/3PpN2/PqP1Q1PP/R4K1R w - - 0 16"))
+
+	searcher.RunIterations(1000000)
+
 	explore := searcher.Head
 	t.Log(explore.Print())
 
 	best := searcher.GetBestMove()
 	t.Log(best.String())
 }
+
